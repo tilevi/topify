@@ -135,9 +135,9 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public void setDetails(ArtistItem artistItem) {
             if (artistItem.getTheColor()) {
-                parentLayout.setBackgroundColor(Color.parseColor("#647188"));
-            } else {
                 parentLayout.setBackgroundColor(Color.parseColor("#485771"));
+            } else {
+                parentLayout.setBackgroundColor(Color.parseColor("#3F495B"));
             }
 
             itemName.setText(artistItem.getName());
@@ -163,11 +163,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             parentLayout = (ConstraintLayout) itemView.findViewById(R.id.parent_layout);
         }
 
+        // 3F495B
         public void setDetails(TrackItem trackItem) {
             if (trackItem.getTheColor()) {
-                parentLayout.setBackgroundColor(Color.parseColor("#647188"));
-            } else {
                 parentLayout.setBackgroundColor(Color.parseColor("#485771"));
+            } else {
+                parentLayout.setBackgroundColor(Color.parseColor("#3F495B"));
             }
 
             itemName.setText(trackItem.getTitle());

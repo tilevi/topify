@@ -47,6 +47,10 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import java.util.Map;
+import java.util.HashMap;
+
+
 import android.support.v7.widget.RecyclerView;
 
 public class MainActivity extends AppCompatActivity {
@@ -103,11 +107,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mSwipeRefreshLayout.setDistanceToTriggerSync(1000);// in dips
+        mSwipeRefreshLayout.setDistanceToTriggerSync(800);// in dips
     }
 
     private void fetchTopArtists() {
-        spotify.getTopArtists(new Callback<Pager<Artist>>() {
+        Map<String, Object> options = new HashMap<>();
+        options.put("time_range", "short_term");
+
+        spotify.getTopArtists(options, new Callback<Pager<Artist>>() {
             @Override
             public void success(Pager<Artist> artists, Response response) {
 
@@ -137,7 +144,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchTopTracks() {
-        spotify.getTopTracks(new Callback<Pager<Track>>() {
+        Map<String, Object> options = new HashMap<>();
+        options.put("time_range", "short_term");
+
+        spotify.getTopTracks(options, new Callback<Pager<Track>>() {
             @Override
             public void success(Pager<Track> tracks, Response response) {
 

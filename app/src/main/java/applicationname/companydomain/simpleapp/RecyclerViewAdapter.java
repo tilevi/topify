@@ -150,14 +150,15 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     }
 
     public class TrackViewHolder extends RecyclerView.ViewHolder {
-
         private TextView itemName;
+        private TextView artistName;
         private ImageView trackImage;
         private ConstraintLayout parentLayout;
 
         public TrackViewHolder(View itemView) {
             super(itemView);
             itemName = (TextView)itemView.findViewById(R.id.itemName);
+            artistName = (TextView)itemView.findViewById(R.id.artistName);
             trackImage = (ImageView) itemView.findViewById(R.id.trackImage);
             parentLayout = (ConstraintLayout) itemView.findViewById(R.id.parent_layout);
         }
@@ -169,7 +170,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 parentLayout.setBackgroundColor(Color.parseColor("#485771"));
             }
 
-            itemName.setText(trackItem.getTitle() + "\n" + trackItem.getArtist());
+            itemName.setText(trackItem.getTitle());
+            artistName.setText(trackItem.getArtist());
 
             Glide.with(context)
                     .load(trackItem.getURL())

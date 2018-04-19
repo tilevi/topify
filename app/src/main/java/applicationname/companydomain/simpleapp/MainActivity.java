@@ -62,6 +62,17 @@ public class MainActivity extends AppCompatActivity {
     private RecyclerViewAdapter mRecyclerViewAdapter;
 
     private ArrayList<Object> feed;
+    private String time_range = "short_term";
+
+    public static final Map<String, String> TIME_LABELS = createTimeLabels();
+    private static Map<String, String> createTimeLabels() {
+        Map<String, String> labels = new HashMap<String, String>();
+        labels.put("short_term", "Based on your last 4 weeks.");
+        labels.put("medium_term", "Based on your last 6 months.");
+        labels.put("long_term", "Based on your last several years.");
+
+        return labels;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,9 +121,24 @@ public class MainActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setDistanceToTriggerSync(800);// in dips
     }
 
+    public void onShortTermClicked(View v) {
+        time_range = "short_term";
+        refreshItems();
+    }
+
+    public void onMediumTermClicked(View v) {
+        time_range = "medium_term";
+        refreshItems();
+    }
+
+    public void onLongTermClicked(View v) {
+        time_range = "long_term";
+        refreshItems();
+    }
+
     private void fetchTopArtists() {
         Map<String, Object> options = new HashMap<>();
-        options.put("time_range", "short_term");
+        options.put("time_range", time_range);
 
         spotify.getTopArtists(options, new Callback<Pager<Artist>>() {
             @Override
@@ -120,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
                 feed = new ArrayList<>();
 
-                feed.add(new CategoryItem("Top Artists"));
+                feed.add(new CategoryItem("Top Artists", time_range));
 
                 for (int i = 0; i < artists.items.size(); i++) {
                     feed.add(new ArtistItem(artists.items.get(i).name.toString(),
@@ -129,9 +155,17 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                mRecyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this);
+                mRecyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this, recyclerView);
                 recyclerView.setAdapter(mRecyclerViewAdapter);
                 recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+                mRecyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(int position) {
+                        ArtistItem artistItem = (ArtistItem) feed.get(position);
+                        Log.d("OnArtistClicked", artistItem.getName());
+                    }
+                });
 
                 fetchTopTracks();
             }
@@ -145,13 +179,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void fetchTopTracks() {
         Map<String, Object> options = new HashMap<>();
-        options.put("time_range", "short_term");
+        options.put("time_range", time_range);
 
         spotify.getTopTracks(options, new Callback<Pager<Track>>() {
             @Override
             public void success(Pager<Track> tracks, Response response) {
 
-                feed.add(new CategoryItem("Top Tracks"));
+                feed.add(new CategoryItem("Top Tracks", time_range));
 
                 for (int i = 0; i < tracks.items.size(); i++) {
                     feed.add(new TrackItem(tracks.items.get(i).name.toString(),

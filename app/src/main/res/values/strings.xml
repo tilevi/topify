@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Topify</string>
     <string name="preference_file_key">applicationname.companydomain.simpleapp</string>
+    <string name="title_activity_artist_details">ArtistDetailsActivity</string>
 </resources>

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,13 +13,14 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Calendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import android.graphics.Color;
-
-import org.w3c.dom.Text;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -127,16 +127,23 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         private TextView itemName;
         private TextView itemTime;
+        private TextView itemUpdateTime;
 
         public CategoryViewHolder(View itemView) {
             super(itemView);
             itemName = (TextView)itemView.findViewById(R.id.itemName);
             itemTime = (TextView)itemView.findViewById(R.id.itemTime);
+            itemUpdateTime = (TextView)itemView.findViewById(R.id.itemUpdateTime);
         }
 
         public void setDetails(CategoryItem cat) {
+
+            DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            String date = df.format(Calendar.getInstance().getTime());
+
             itemName.setText(cat.getTitle());
             itemTime.setText(MainActivity.TIME_LABELS.get(cat.getTimeRange()));
+            itemUpdateTime.setText(date);
         }
     }
 

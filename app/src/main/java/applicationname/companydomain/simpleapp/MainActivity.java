@@ -67,12 +67,23 @@ public class MainActivity extends AppCompatActivity {
     public static final Map<String, String> TIME_LABELS = createTimeLabels();
     private static Map<String, String> createTimeLabels() {
         Map<String, String> labels = new HashMap<String, String>();
-        labels.put("short_term", "Based on your last 4 weeks.");
-        labels.put("medium_term", "Based on your last 6 months.");
-        labels.put("long_term", "Based on your last several years.");
+        labels.put("short_term", "Based on the past 4 weeks.");
+        labels.put("medium_term", "Based on the past 6 months.");
+        labels.put("long_term", "Based on several years.");
 
         return labels;
     }
+
+    private static final Map<String, String> TERM_LABELS = createTermLabels();
+    private static Map<String, String> createTermLabels() {
+        Map<String, String> labels = new HashMap<String, String>();
+        labels.put("short_term", "Short-term");
+        labels.put("medium_term", "Medium-term");
+        labels.put("long_term", "Long-term");
+
+        return labels;
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,18 +132,26 @@ public class MainActivity extends AppCompatActivity {
         mSwipeRefreshLayout.setDistanceToTriggerSync(800);// in dips
     }
 
+    private void setHeaderLabel() {
+        TextView timeLabel = (TextView) findViewById(R.id.timeLabel);
+        timeLabel.setText(MainActivity.TERM_LABELS.get(time_range));
+    }
+
     public void onShortTermClicked(View v) {
         time_range = "short_term";
+        setHeaderLabel();
         refreshItems();
     }
 
     public void onMediumTermClicked(View v) {
         time_range = "medium_term";
+        setHeaderLabel();
         refreshItems();
     }
 
     public void onLongTermClicked(View v) {
         time_range = "long_term";
+        setHeaderLabel();
         refreshItems();
     }
 

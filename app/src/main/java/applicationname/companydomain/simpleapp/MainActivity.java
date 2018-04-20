@@ -10,6 +10,7 @@ import android.view.View;
 import android.util.Log;
 
 
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
@@ -52,6 +53,9 @@ import java.util.HashMap;
 
 
 import android.support.v7.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -98,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
             spotifyApi.setAccessToken(token);
 
             // Load my username or (display name)
-            /*spotify.getMe(new Callback<UserPrivate>() {
+            spotify.getMe(new Callback<UserPrivate>() {
 
                 public void success(UserPrivate userPrivate, Response response) {
 
@@ -106,16 +110,28 @@ public class MainActivity extends AppCompatActivity {
                     if (displayName == null || displayName.trim().equals("")) {
                         displayName = userPrivate.id;
                     }
-                    Log.d("TheUsername", displayName);
 
-                    TextView textView = (TextView) findViewById(R.id.username);
-                    textView.setText(displayName);
+                    //Log.d("TheUsername", displayName);
+
+                    Object url; // We don't know if it's going to be a string or integer.
+                    if (userPrivate.images.size() > 0) {
+                        url = userPrivate.images.get(userPrivate.images.size() - 1).url;
+                    } else {
+                        url = R.drawable.unknown;
+                    }
+
+                    ImageView avatar = (ImageView) findViewById(R.id.avatarView);
+
+                    Glide.with(MainActivity.this)
+                            .load(url)
+                            .apply(RequestOptions.circleCropTransform())
+                            .into(avatar);
                 }
 
                 public void failure(RetrofitError error) {
                     Log.d("getMe FAILURE", error.toString());
                 }
-            });*/
+            });
 
             fetchTopArtists();
         }

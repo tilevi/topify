@@ -46,7 +46,7 @@ import android.net.Uri;
 
 public class LoginActivity extends Activity
 {
-    protected static final String CLIENT_ID = "af04543fa0d549ed902966dc590fe7f1";
+    protected static final String CLIENT_ID = "***REMOVED***";
     protected static final String REDIRECT_URI = "simpleapp://callback";
     protected static final int REQUEST_CODE = 1337;
 
@@ -61,6 +61,7 @@ public class LoginActivity extends Activity
         tokenManager = new TokenManager(LoginActivity.this);
 
         Bundle args = getIntent().getExtras();
+        //LoginActivity.tokenManager.setTokens("BQDWq-FJ8toHagRz648z26gc-mAlgy0_StyL9ybB4ojJzbH1eV43g68bNHr0cIr5STjLwye3tPONS0Lx8S-u39xlVOl69EjRWyQ6rDrW_rN7_u19uOSOPHjwjFUsxceWFzo4sK8dSejYTvZRHan_v5OhQ8cszmrkEghjOKVVPw", "");
 
         if (args != null && args.getBoolean("login", false)) {
             AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
@@ -88,6 +89,34 @@ public class LoginActivity extends Activity
         }
     }
 
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.d("onNewIntent", "WE GOT CALLED!!");
+
+
+        Uri uri = intent.getData();
+        if (uri != null) {
+            AuthenticationResponse response = AuthenticationResponse.fromUri(uri);
+
+            switch (response.getType()) {
+                // Response was successful and contains auth token
+                case TOKEN:
+                    Log.d("onNewIntent", "WE GOT THE TOKEN!");
+                    // Handle successful response
+                    break;
+
+                // Auth flow returned an error
+                case ERROR:
+                    // Handle error response
+                    break;
+
+                // Most likely auth flow was cancelled
+                default:
+                    // Handle other cases
+            }
+        }
+    }
+
     public void onLoginButtonClicked(View v) {
         // Grab the access token
         final String token = tokenManager.getToken();
@@ -98,7 +127,7 @@ public class LoginActivity extends Activity
             AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
                     AuthenticationResponse.Type.CODE, REDIRECT_URI);
             builder.setScopes(new String[]{"user-top-read", "user-read-private"});
-            //builder.setShowDialog(true);
+            builder.setShowDialog(true);
             AuthenticationRequest request = builder.build();
 
             AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
@@ -152,5 +181,4 @@ public class LoginActivity extends Activity
             }
         }
     }
-
 }

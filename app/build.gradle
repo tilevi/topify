@@ -33,6 +33,7 @@ dependencies {
     // This library handles authentication and authorization
     //implementation 'com.spotify.android:auth:1.0.0-alpha'
     implementation 'com.spotify.sdk:spotify-auth:1.0.0-beta11@aar'
+    //implementation 'com.spotify.android:auth:1.0.0-alpha'
     implementation 'com.github.kaaes:spotify-web-api-android:0.4.1'
 
     implementation 'com.squareup.okhttp3:okhttp:3.4.1'

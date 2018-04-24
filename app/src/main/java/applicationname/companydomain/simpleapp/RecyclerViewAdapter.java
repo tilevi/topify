@@ -22,6 +22,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import android.graphics.Color;
 
+import kaaes.spotify.webapi.android.models.Track;
+
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private OnItemClickListener mListener;
@@ -165,9 +167,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         Intent intent = new Intent(context, ArtistDetailsActivity.class);
+
+                        ArtistItem artistItem = (ArtistItem) topFeed.get(position);
+                        intent.putExtra("artist_id", artistItem.getID());
+                        intent.putExtra("artist_name", artistItem.getName());
                         context.startActivity(intent);
-                        //ArtistItem artistItem = (ArtistItem) topFeed.get(position);
-                        //Log.d("OnArtistClicked", artistItem.getName());
                     }
                 }
             });
@@ -208,7 +212,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 public void onClick(View v) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
-                        Intent intent = new Intent(context, ArtistDetailsActivity.class);
+                        Intent intent = new Intent(context, TrackDetailsActivity.class);
+
+                        TrackItem trackItem = (TrackItem) topFeed.get(position);
+                        intent.putExtra("track_id", trackItem.getID());
+                        intent.putExtra("track_title", trackItem.getTitle());
+                        intent.putExtra("track_artist", trackItem.getArtist());
                         context.startActivity(intent);
                     }
                 }

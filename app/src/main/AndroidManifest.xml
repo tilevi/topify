@@ -26,6 +26,7 @@
             android:name=".ArtistDetailsActivity"
             android:label="@string/title_activity_artist_details"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity android:name=".TrackDetailsActivity"></activity>
     </application>
 
 </manifest>

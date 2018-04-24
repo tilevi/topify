@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.view.View;
 import android.util.Log;
 
+import android.support.v4.widget.DrawerLayout;
+import android.support.v4.view.GravityCompat;
 
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -59,6 +61,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 public class MainActivity extends AppCompatActivity {
 
+    private DrawerLayout mDrawerLayout;
+
     static final SpotifyApi spotifyApi = new SpotifyApi();
     static final SpotifyService spotify = spotifyApi.getService();
 
@@ -94,6 +98,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+
         Bundle args = getIntent().getExtras();
 
         if (args != null) {
@@ -126,6 +132,12 @@ public class MainActivity extends AppCompatActivity {
                             .load(url)
                             .apply(RequestOptions.circleCropTransform())
                             .into(avatar);
+
+                    avatar.setOnClickListener(new View.OnClickListener(){
+                        public void onClick(View v) {
+                            mDrawerLayout.openDrawer(GravityCompat.START);
+                        }
+                    });
                 }
 
                 public void failure(RetrofitError error) {
@@ -186,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < artists.items.size(); i++) {
                     feed.add(new ArtistItem(artists.items.get(i).name.toString(),
                             artists.items.get(i).images.get(artists.items.get(i).images.size() - 1).url,
-                            (i % 2) == 0));
+                            (i % 2) == 0, artists.items.get(i).id));
                 }
 
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -226,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
                     feed.add(new TrackItem(tracks.items.get(i).name.toString(),
                             tracks.items.get(i).artists.get(0).name.toString(),
                             tracks.items.get(i).album.images.get(tracks.items.get(i).album.images.size() - 1).url,
-                            (i % 2) == 0));
+                            (i % 2) == 0, tracks.items.get(i).id));
                 }
 
                 onItemsLoadComplete();

@@ -4,12 +4,14 @@ public class ArtistItem {
 
     private String name;
     private String url;
+    private String id;
     private boolean color;
 
-    ArtistItem(String name, String url, boolean color) {
+    ArtistItem(String name, String url, boolean color, String id) {
         this.name = name;
         this.url = url;
         this.color = color;
+        this.id = id;
     }
 
     public String getName() {
@@ -22,5 +24,9 @@ public class ArtistItem {
 
     public boolean getTheColor() {
         return color;
+    }
+
+    public String getID() {
+        return id;
     }
 }

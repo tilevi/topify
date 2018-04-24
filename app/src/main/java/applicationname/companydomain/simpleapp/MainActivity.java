@@ -198,6 +198,7 @@ public class MainActivity extends AppCompatActivity {
                 for (int i = 0; i < artists.items.size(); i++) {
                     feed.add(new ArtistItem(artists.items.get(i).name.toString(),
                             artists.items.get(i).images.get(artists.items.get(i).images.size() - 1).url,
+                            artists.items.get(i).images.get(0).url,
                             (i % 2) == 0, artists.items.get(i).id));
                 }
 

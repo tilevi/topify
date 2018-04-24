@@ -4,12 +4,14 @@ public class ArtistItem {
 
     private String name;
     private String url;
+    private String hdURL;
     private String id;
     private boolean color;
 
-    ArtistItem(String name, String url, boolean color, String id) {
+    ArtistItem(String name, String url, String hdURL, boolean color, String id) {
         this.name = name;
         this.url = url;
+        this.hdURL = hdURL;
         this.color = color;
         this.id = id;
     }
@@ -28,5 +30,9 @@ public class ArtistItem {
 
     public String getID() {
         return id;
+    }
+
+    public String getHdURL() {
+        return hdURL;
     }
 }

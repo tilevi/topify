@@ -171,6 +171,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         ArtistItem artistItem = (ArtistItem) topFeed.get(position);
                         intent.putExtra("artist_id", artistItem.getID());
                         intent.putExtra("artist_name", artistItem.getName());
+                        intent.putExtra("artist_url", artistItem.getHdURL());
+
                         context.startActivity(intent);
                     }
                 }

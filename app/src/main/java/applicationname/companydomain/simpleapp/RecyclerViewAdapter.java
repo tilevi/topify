@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -172,6 +173,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         intent.putExtra("artist_id", artistItem.getID());
                         intent.putExtra("artist_name", artistItem.getName());
                         intent.putExtra("artist_url", artistItem.getHdURL());
+                        intent.putExtra("top_artist", artistItem.getRank());
+                        intent.putExtra("popularity", artistItem.getPopularity());
 
                         context.startActivity(intent);
                     }
@@ -220,6 +223,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         intent.putExtra("track_id", trackItem.getID());
                         intent.putExtra("track_title", trackItem.getTitle());
                         intent.putExtra("track_artist", trackItem.getArtist());
+                        intent.putExtra("top_track", trackItem.getRank());
+
                         context.startActivity(intent);
                     }
                 }

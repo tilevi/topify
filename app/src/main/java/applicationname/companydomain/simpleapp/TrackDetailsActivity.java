@@ -23,6 +23,10 @@ public class TrackDetailsActivity extends AppCompatActivity {
             String track_id = args.getString("track_id", "");
             String track_title = args.getString("track_title", "");
             String track_artist = args.getString("track_artist", "");
+            Integer top_track = args.getInt("top_track", -1);
+
+            TextView textView = (TextView) findViewById(R.id.topTrackRank);
+            textView.setText("#" + top_track + " Track");
 
             myWebView = (WebView) findViewById(R.id.webView);
 

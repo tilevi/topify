@@ -2,6 +2,7 @@
 <!-- Use DrawerLayout as root container for activity -->
 <android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -80,31 +81,35 @@
             android:scrollbars="vertical" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
-    <ImageView
-        android:id="@+id/avatarView"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toBottomOf="@+id/toolbar4"
-        app:layout_constraintStart_toStartOf="@+id/toolbar4"
-        app:layout_constraintTop_toTopOf="@+id/toolbar4"
-        app:layout_constraintVertical_bias="0.533"
-        app:srcCompat="@mipmap/ic_launcher_round" />
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="47dp"
-            android:layout_height="40dp"
+        <ImageView
+            android:id="@+id/avatarView"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:onClick="onRefreshTokenClicked"
-            android:text="R"
-            app:layout_constraintEnd_toStartOf="@+id/button6"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintBottom_toBottomOf="@+id/avatarView2"
+            app:layout_constraintEnd_toEndOf="@+id/avatarView2"
+            app:layout_constraintStart_toStartOf="@+id/avatarView2"
+            app:layout_constraintTop_toTopOf="@+id/avatarView2"
+            app:srcCompat="@mipmap/ic_launcher_round" />
+
+        <ImageView
+            android:id="@+id/avatarView2"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="@+id/toolbar4"
+            app:layout_constraintStart_toStartOf="@+id/toolbar4"
+            app:layout_constraintTop_toTopOf="@+id/toolbar4"
+            app:layout_constraintVertical_bias="0.5"
+            android:background="@android:color/transparent" />
 
     </android.support.constraint.ConstraintLayout>
 

@@ -64,13 +64,17 @@ public class LoginActivity extends Activity
         //LoginActivity.tokenManager.setTokens("BQDWq-FJ8toHagRz648z26gc-mAlgy0_StyL9ybB4ojJzbH1eV43g68bNHr0cIr5STjLwye3tPONS0Lx8S-u39xlVOl69EjRWyQ6rDrW_rN7_u19uOSOPHjwjFUsxceWFzo4sK8dSejYTvZRHan_v5OhQ8cszmrkEghjOKVVPw", "");
 
         if (args != null && args.getBoolean("login", false)) {
-            AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
+
+            AuthenticationClient.logout(LoginActivity.this);
+
+            /*AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
                     AuthenticationResponse.Type.CODE, LoginActivity.REDIRECT_URI);
             builder.setScopes(new String[]{"user-top-read", "user-read-private"});
             builder.setShowDialog(true);
             AuthenticationRequest request = builder.build();
 
-            AuthenticationClient.openLoginActivity(LoginActivity.this, LoginActivity.REQUEST_CODE, request);
+            //AuthenticationClient.openLoginInBrowser(this, request);
+            AuthenticationClient.openLoginActivity(LoginActivity.this, LoginActivity.REQUEST_CODE, request);*/
         } else {
             // Grab the access token
             final String token = tokenManager.getToken();
@@ -93,16 +97,40 @@ public class LoginActivity extends Activity
         super.onNewIntent(intent);
         Log.d("onNewIntent", "WE GOT CALLED!!");
 
-
         Uri uri = intent.getData();
         if (uri != null) {
             AuthenticationResponse response = AuthenticationResponse.fromUri(uri);
 
             switch (response.getType()) {
                 // Response was successful and contains auth token
-                case TOKEN:
-                    Log.d("onNewIntent", "WE GOT THE TOKEN!");
-                    // Handle successful response
+                case CODE:
+                    Log.d("onNewIntent", "WE GOT THE CODE!!");
+                    try {
+                        // We pass in our authentication code
+                        LoginActivity.tokenManager.getAccessToken(response.getCode(), new myCallback() {
+                            @Override
+                            public void onSuccess(String a_token, String r_token) {
+                                // no errors
+                                Log.d("onSuccess access token", a_token);
+                                Log.d("onSuccess refresh token", r_token);
+
+                                LoginActivity.tokenManager.setTokens(a_token, r_token);
+
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                intent.putExtra("ACCESS_TOKEN", a_token);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void onError(String err) {
+                                Log.d("onError", "Failed to retrieve new access token.");
+                            }
+                        });
+                    } catch (Exception e) {
+                        // Exception handler
+                    }
+
                     break;
 
                 // Auth flow returned an error
@@ -130,6 +158,9 @@ public class LoginActivity extends Activity
             builder.setShowDialog(true);
             AuthenticationRequest request = builder.build();
 
+            AuthenticationClient.logout(LoginActivity.this);
+
+            // AuthenticationClient.openLoginInBrowser(this, request);
             AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
         } else {
 

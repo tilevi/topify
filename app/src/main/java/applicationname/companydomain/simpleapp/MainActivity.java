@@ -22,6 +22,8 @@ import kaaes.spotify.webapi.android.SpotifyCallback;
 import kaaes.spotify.webapi.android.SpotifyError;
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
+import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
+import kaaes.spotify.webapi.android.models.AudioFeaturesTracks;
 import kaaes.spotify.webapi.android.models.Track;
 import kaaes.spotify.webapi.android.models.Album;
 import kaaes.spotify.webapi.android.models.Artist;
@@ -48,8 +50,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -58,8 +62,14 @@ import android.support.v7.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class MainActivity extends AppCompatActivity {
+
+    // This is set to true when we're refreshing the feed.
+    private boolean refresh = false;
 
     private DrawerLayout mDrawerLayout;
 
@@ -92,6 +102,21 @@ public class MainActivity extends AppCompatActivity {
         return labels;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+    }
+
+    private void fetchNewToken() {
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
+                AuthenticationResponse.Type.TOKEN, LoginActivity.REDIRECT_URI);
+        builder.setScopes(new String[]{"user-top-read", "user-read-private"});
+        //builder.setShowDialog(true);
+        AuthenticationRequest request = builder.build();
+
+        AuthenticationClient.openLoginActivity(MainActivity.this,
+                LoginActivity.REQUEST_CODE, request);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,44 +132,10 @@ public class MainActivity extends AppCompatActivity {
             Log.d("onCreate token", token);
             spotifyApi.setAccessToken(token);
 
-            // Load my username or (display name)
-            spotify.getMe(new Callback<UserPrivate>() {
+            // Fetch our Spotify profile
+            fetchMyAvatar();
 
-                public void success(UserPrivate userPrivate, Response response) {
-
-                    String displayName = userPrivate.display_name;
-                    if (displayName == null || displayName.trim().equals("")) {
-                        displayName = userPrivate.id;
-                    }
-
-                    //Log.d("TheUsername", displayName);
-
-                    Object url; // We don't know if it's going to be a string or integer.
-                    if (userPrivate.images.size() > 0) {
-                        url = userPrivate.images.get(userPrivate.images.size() - 1).url;
-                    } else {
-                        url = R.drawable.unknown;
-                    }
-
-                    ImageView avatar = (ImageView) findViewById(R.id.avatarView);
-
-                    Glide.with(MainActivity.this)
-                            .load(url)
-                            .apply(RequestOptions.circleCropTransform())
-                            .into(avatar);
-
-                    avatar.setOnClickListener(new View.OnClickListener(){
-                        public void onClick(View v) {
-                            mDrawerLayout.openDrawer(GravityCompat.START);
-                        }
-                    });
-                }
-
-                public void failure(RetrofitError error) {
-                    Log.d("getMe FAILURE", error.toString());
-                }
-            });
-
+            // Fetch our top artists and tracks
             fetchTopArtists();
         }
 
@@ -157,7 +148,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        mSwipeRefreshLayout.setDistanceToTriggerSync(800);// in dips
+        mSwipeRefreshLayout.setDistanceToTriggerSync(600);// in dips
     }
 
     private void setHeaderLabel() {
@@ -199,7 +190,9 @@ public class MainActivity extends AppCompatActivity {
                     feed.add(new ArtistItem(artists.items.get(i).name.toString(),
                             artists.items.get(i).images.get(artists.items.get(i).images.size() - 1).url,
                             artists.items.get(i).images.get(0).url,
-                            (i % 2) == 0, artists.items.get(i).id));
+                            (i % 2) == 0, artists.items.get(i).id,
+                            (i+1),
+                            artists.items.get(i).popularity));
                 }
 
                 RecyclerView recyclerView = findViewById(R.id.recyclerView);
@@ -220,6 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void failure(RetrofitError error) {
+                fetchNewToken();
                 Log.d("TopArtistsFAILURE", error.toString());
             }
         });
@@ -235,18 +229,12 @@ public class MainActivity extends AppCompatActivity {
 
                 feed.add(new CategoryItem("Top Tracks", time_range));
 
-                for (int i = 0; i < tracks.items.size(); i++) {
-                    feed.add(new TrackItem(tracks.items.get(i).name.toString(),
-                            tracks.items.get(i).artists.get(0).name.toString(),
-                            tracks.items.get(i).album.images.get(tracks.items.get(i).album.images.size() - 1).url,
-                            (i % 2) == 0, tracks.items.get(i).id));
-                }
-
-                onItemsLoadComplete();
+                getTrackFeatures(tracks.items);
             }
 
             @Override
             public void failure(RetrofitError error) {
+                fetchNewToken();
                 Log.d("TopTracksFAILURE", error.toString());
             }
         });
@@ -255,6 +243,8 @@ public class MainActivity extends AppCompatActivity {
     public void onLogoutButtonClicked(View v) {
         LoginActivity.tokenManager.clearToken();
 
+        AuthenticationClient.logout(MainActivity.this);
+
         Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra("login", true);
         startActivity(intent);
@@ -262,6 +252,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onRefreshTokenClicked(View v) {
+        spotifyApi.setAccessToken("");
+        /*
         LoginActivity.tokenManager.getNewToken(new myCallback() {
             @Override
             public void onSuccess(String a_token, String r_token) {
@@ -272,12 +264,111 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String err) {
                 Log.d("onError", "Failed to retrieve new access token.");
             }
+        });*/
+    }
+
+    private void fetchMyAvatar() {
+        // Load my username or (display name)
+        spotify.getMe(new Callback<UserPrivate>() {
+
+            public void success(UserPrivate userPrivate, Response response) {
+
+                String displayName = userPrivate.display_name;
+                if (displayName == null || displayName.trim().equals("")) {
+                    displayName = userPrivate.id;
+                }
+
+                Object url; // We don't know if it's going to be a string or integer.
+                if (userPrivate.images.size() > 0) {
+                    url = userPrivate.images.get(userPrivate.images.size() - 1).url;
+                } else {
+                    url = R.drawable.unknown;
+                }
+
+                ImageView avatar = (ImageView) findViewById(R.id.avatarView);
+                ImageView avatar2 = (ImageView) findViewById(R.id.avatarView2);
+
+                Glide.with(MainActivity.this)
+                        .load(url)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(avatar);
+
+                avatar2.setOnClickListener(new View.OnClickListener(){
+                    public void onClick(View v) {
+                        mDrawerLayout.openDrawer(GravityCompat.START);
+                    }
+                });
+            }
+
+            public void failure(RetrofitError error) {
+                fetchNewToken();
+                Log.d("getMe FAILURE", error.toString());
+            }
         });
     }
 
-    void refreshItems() {
-        // Fetch our top artists
+    // We want to set it to synchronized just in-case.
+    private synchronized void refreshItems() {
+        if (refresh) {
+            return;
+        }
+        refresh = true;
+
+        // Fetch our profile
+        fetchMyAvatar();
+
+        // Fetch our top artists and tracks
         fetchTopArtists();
+    }
+
+    private void getTrackFeatures(final List<Track> items) {
+
+        StringBuilder sb = new StringBuilder("");
+
+        for (int i = 0; i < items.size(); i++) {
+            if (i != (items.size() - 1)) {
+                sb.append(items.get(i).id + ",");
+            } else {
+                sb.append(items.get(i).id);
+            }
+        }
+
+        spotify.getTracksAudioFeatures(sb.toString(), new Callback<AudioFeaturesTracks>() {
+            @Override
+            public void success(AudioFeaturesTracks features, Response response) {
+
+                List<AudioFeaturesTrack> audioFeaturesTracks = features.audio_features;
+
+                for (int i = 0; i < audioFeaturesTracks.size(); i++) {
+                    if (audioFeaturesTracks.get(i) != null) {
+                        feed.add(new TrackItem(items.get(i).name.toString(),
+                                items.get(i).artists.get(0).name.toString(),
+                                items.get(i).album.images.get(items.get(i).album.images.size() - 1).url,
+                                (i % 2) == 0, items.get(i).id,
+                                (i+1),
+                                items.get(i).popularity,
+                                audioFeaturesTracks.get(i).danceability,
+                                audioFeaturesTracks.get(i).energy,
+                                audioFeaturesTracks.get(i).valence));
+                    } else {
+                        feed.add(new TrackItem(items.get(i).name.toString(),
+                                items.get(i).artists.get(0).name.toString(),
+                                items.get(i).album.images.get(items.get(i).album.images.size() - 1).url,
+                                (i % 2) == 0, items.get(i).id,
+                                (i+1),
+                                items.get(i).popularity,
+                                -1f,
+                                -1f,
+                                -1f));
+                    }
+                }
+                onItemsLoadComplete();
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+            }
+        });
     }
 
     void onItemsLoadComplete() {
@@ -287,5 +378,24 @@ public class MainActivity extends AppCompatActivity {
 
         // Stop refresh animation
         mSwipeRefreshLayout.setRefreshing(false);
+
+        refresh = false;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+
+        if (requestCode == LoginActivity.REQUEST_CODE) {
+
+            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+
+            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
+                String access_token = response.getAccessToken();
+                LoginActivity.tokenManager.setTokens(access_token, "");
+                spotifyApi.setAccessToken(access_token);
+                refreshItems();
+            }
+        }
     }
 }

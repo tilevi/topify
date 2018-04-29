@@ -7,13 +7,27 @@ public class ArtistItem {
     private String hdURL;
     private String id;
     private boolean color;
+    private int rank;
 
-    ArtistItem(String name, String url, String hdURL, boolean color, String id) {
+    private float popularity;
+
+    ArtistItem(String name, String url, String hdURL, boolean color, String id, int rank,
+               float popularity) {
         this.name = name;
         this.url = url;
         this.hdURL = hdURL;
         this.color = color;
         this.id = id;
+        this.rank = rank;
+        this.popularity = popularity;
+    }
+
+    public int getRank() {
+        return rank;
+    }
+
+    public float getPopularity() {
+        return popularity;
     }
 
     public String getName() {

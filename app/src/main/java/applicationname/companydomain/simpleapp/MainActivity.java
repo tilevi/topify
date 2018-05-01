@@ -238,7 +238,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onLogoutButtonClicked(View v) {
-        LoginActivity.tokenManager.clearToken();
+        onMediumTermClicked(v);
+        /*LoginActivity.tokenManager.clearToken();
         spotifyApi.setAccessToken("");
 
         AuthenticationClient.logout(MainActivity.this);
@@ -246,7 +247,7 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, LoginActivity.class);
         intent.putExtra("login", true);
         startActivity(intent);
-        finish();
+        finish();*/
     }
 
     public void onRefreshTokenClicked(View v) {

@@ -68,9 +68,6 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class MainActivity extends AppCompatActivity {
 
-    // This is set to true when we're refreshing the feed.
-    private boolean refresh = false;
-
     private DrawerLayout mDrawerLayout;
 
     static final SpotifyApi spotifyApi = new SpotifyApi();
@@ -108,6 +105,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void fetchNewToken() {
+        // Stop refresh animation
+        mSwipeRefreshLayout.setRefreshing(false);
+
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
                 AuthenticationResponse.Type.TOKEN, LoginActivity.REDIRECT_URI);
         builder.setScopes(new String[]{"user-top-read", "user-read-private"});
@@ -134,9 +134,6 @@ public class MainActivity extends AppCompatActivity {
 
             // Fetch our Spotify profile
             fetchMyAvatar();
-
-            // Fetch our top artists and tracks
-            fetchTopArtists();
         }
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
@@ -242,6 +239,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onLogoutButtonClicked(View v) {
         LoginActivity.tokenManager.clearToken();
+        spotifyApi.setAccessToken("");
 
         AuthenticationClient.logout(MainActivity.this);
 
@@ -298,6 +296,9 @@ public class MainActivity extends AppCompatActivity {
                         mDrawerLayout.openDrawer(GravityCompat.START);
                     }
                 });
+
+                // Fetch our top artists and tracks
+                fetchTopArtists();
             }
 
             public void failure(RetrofitError error) {
@@ -309,16 +310,8 @@ public class MainActivity extends AppCompatActivity {
 
     // We want to set it to synchronized just in-case.
     private synchronized void refreshItems() {
-        if (refresh) {
-            return;
-        }
-        refresh = true;
-
         // Fetch our profile
         fetchMyAvatar();
-
-        // Fetch our top artists and tracks
-        fetchTopArtists();
     }
 
     private void getTrackFeatures(final List<Track> items) {
@@ -378,8 +371,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Stop refresh animation
         mSwipeRefreshLayout.setRefreshing(false);
-
-        refresh = false;
     }
 
     @Override

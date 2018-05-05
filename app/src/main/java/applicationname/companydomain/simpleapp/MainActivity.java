@@ -1,11 +1,13 @@
 package applicationname.companydomain.simpleapp;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.support.annotation.NonNull;
+import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
+import android.view.MenuItem;
 import android.view.View;
 import android.util.Log;
 
@@ -13,44 +15,23 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.view.GravityCompat;
 
 import android.widget.ImageView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import kaaes.spotify.webapi.android.SpotifyApi;
 import kaaes.spotify.webapi.android.SpotifyService;
 
-import kaaes.spotify.webapi.android.SpotifyCallback;
-import kaaes.spotify.webapi.android.SpotifyError;
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTracks;
 import kaaes.spotify.webapi.android.models.Track;
-import kaaes.spotify.webapi.android.models.Album;
 import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.TracksPager;
 import kaaes.spotify.webapi.android.models.Pager;
 
 import kaaes.spotify.webapi.android.models.UserPrivate;
-import kaaes.spotify.webapi.android.models.UserPublic;
 import retrofit.RetrofitError;
 import retrofit.Callback;
 import retrofit.client.Response;
-import retrofit.ResponseCallback;
 
-import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
-import retrofit.http.QueryMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import java.util.List;
@@ -66,7 +47,7 @@ import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawerLayout;
 
@@ -104,6 +85,30 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
     }
 
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        // Handle navigation view item clicks here.
+        switch (item.getItemId()) {
+
+            case R.id.log_out: {
+                LoginActivity.tokenManager.clearToken();
+                spotifyApi.setAccessToken("");
+
+                AuthenticationClient.logout(MainActivity.this);
+
+                Intent intent = new Intent(this, LoginActivity.class);
+                intent.putExtra("login", true);
+                startActivity(intent);
+                finish();
+
+                break;
+            }
+        }
+        //close navigation drawer
+        mDrawerLayout.closeDrawer(GravityCompat.START);
+        return true;
+    }
+
     private void fetchNewToken() {
         // Stop refresh animation
         mSwipeRefreshLayout.setRefreshing(false);
@@ -116,6 +121,11 @@ public class MainActivity extends AppCompatActivity {
 
         AuthenticationClient.openLoginActivity(MainActivity.this,
                 LoginActivity.REQUEST_CODE, request);
+    }
+
+    private void setNavigationViewListner() {
+        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
     }
 
     @Override
@@ -146,6 +156,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         mSwipeRefreshLayout.setDistanceToTriggerSync(600);// in dips
+        setNavigationViewListner();
     }
 
     private void setHeaderLabel() {
@@ -237,22 +248,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void onLogoutButtonClicked(View v) {
-        onMediumTermClicked(v);
-        /*LoginActivity.tokenManager.clearToken();
-        spotifyApi.setAccessToken("");
-
-        AuthenticationClient.logout(MainActivity.this);
-
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.putExtra("login", true);
-        startActivity(intent);
-        finish();*/
-    }
-
     public void onRefreshTokenClicked(View v) {
         spotifyApi.setAccessToken("");
-        /*
+
         LoginActivity.tokenManager.getNewToken(new myCallback() {
             @Override
             public void onSuccess(String a_token, String r_token) {
@@ -263,8 +261,33 @@ public class MainActivity extends AppCompatActivity {
             public void onError(String err) {
                 Log.d("onError", "Failed to retrieve new access token.");
             }
-        });*/
+        });
     }
+
+
+    public void onPopUpMenuClicked(final View view) {
+        PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
+        popupMenu.getMenuInflater().inflate(R.menu.popup_menu_term, popupMenu.getMenu());
+
+        popupMenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                if (item.getItemId() == R.id.one) {
+                    onShortTermClicked(view);
+                } else if (item.getItemId() == R.id.two) {
+                    onMediumTermClicked(view);
+                } else {
+                    onLongTermClicked(view);
+                }
+                return true;
+            }
+        });
+
+        popupMenu.show();
+    }
+
+
+
 
     private void fetchMyAvatar() {
         // Load my username or (display name)

@@ -236,7 +236,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void success(Pager<Track> tracks, Response response) {
 
                 feed.add(new CategoryItem("Top Tracks", time_range));
-
                 getTrackFeatures(tracks.items);
             }
 

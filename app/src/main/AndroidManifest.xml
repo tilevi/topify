@@ -11,25 +11,25 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-        <activity android:name=".LoginActivity"
+        <activity
+            android:name=".LoginActivity"
             android:launchMode="singleInstance">
-
             // An intent filter that will receive the response
             // from the authentication service
             <intent-filter>
-                <action android:name="android.intent.action.VIEW"/>
+                <action android:name="android.intent.action.VIEW" />
 
-                <category android:name="android.intent.category.DEFAULT"/>
-                <category android:name="android.intent.category.BROWSABLE"/>
-
-                // this needs to match the scheme and host of the redirect URI as defined in My applications page
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                // this needs to match the scheme and host of the redirect URI as defined in My
+                applications page
                 <data
                     android:host="callback"
-                    android:scheme="simpleapp"/>
+                    android:scheme="simpleapp" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -41,7 +41,8 @@
             android:name=".ArtistDetailsActivity"
             android:label="@string/title_activity_artist_details"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".TrackDetailsActivity"></activity>
+        <activity android:name=".TrackDetailsActivity" />
+        <activity android:name=".RelatedArtists"></activity>
     </application>
 
 </manifest>

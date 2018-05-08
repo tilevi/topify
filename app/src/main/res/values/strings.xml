@@ -4,4 +4,5 @@
     <string name="title_activity_artist_details">ArtistDetailsActivity</string>
     <string name="vertical_ellipsis">&#8942;</string>
     <string name="about"><u>About</u></string>
+    <string name="top_tracks"><u>Top Tracks</u></string>
 </resources>

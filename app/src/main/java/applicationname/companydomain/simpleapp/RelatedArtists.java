@@ -45,6 +45,9 @@ public class RelatedArtists extends SpotifyCodeActivity {
 
                 mRecyclerViewAdapter.setTopFeed(feed);
                 mRecyclerViewAdapter.notifyDataSetChanged();
+
+                // Reset the login attempts.
+                resetLoginAttempts();
             }
 
             @Override

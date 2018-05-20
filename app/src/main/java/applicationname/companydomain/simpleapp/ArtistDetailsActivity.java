@@ -76,6 +76,9 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
         html.append("</body>");
 
         myWebView.loadData(html.toString(), "text/html", null);
+
+        // Reset the login attempts.
+        resetLoginAttempts();
     }
 
     private void fetchArtistTopTracks() {

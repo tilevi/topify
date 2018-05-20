@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.MenuItem;
@@ -43,11 +42,9 @@ import android.support.v7.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends SpotifyCodeActivity
+        implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawerLayout;
 
@@ -81,26 +78,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         switch (item.getItemId()) {
 
             case R.id.log_out: {
-                LoginActivity.tokenManager.clearToken();
-                spotifyApi.setAccessToken("");
-
-                AuthenticationClient.logout(MainActivity.this);
-
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.putExtra("login", true);
-                startActivity(intent);
-                finish();
-
+                logOut(MainActivity.this);
                 break;
             }
         }
@@ -109,21 +92,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
-    private void fetchNewToken() {
-        // Stop refresh animation
-        mSwipeRefreshLayout.setRefreshing(false);
-
-        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
-                AuthenticationResponse.Type.TOKEN, LoginActivity.REDIRECT_URI);
-        builder.setScopes(new String[]{"user-top-read", "user-read-private"});
-        //builder.setShowDialog(true);
-        AuthenticationRequest request = builder.build();
-
-        AuthenticationClient.openLoginActivity(MainActivity.this,
-                LoginActivity.REQUEST_CODE, request);
-    }
-
-    private void setNavigationViewListner() {
+    private void setNavigationViewListener() {
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
@@ -133,10 +102,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mDrawerLayout = findViewById(R.id.drawer_layout);
+        // Initially, hide the avatar.
+        ImageView avatarView = findViewById(R.id.avatarView);
+        avatarView.setVisibility(View.GONE);
 
         Bundle args = getIntent().getExtras();
-
         if (args != null) {
             String token = args.getString("ACCESS_TOKEN", "");
             Log.d("onCreate token", token);
@@ -146,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             fetchMyAvatar();
         }
 
+        // Get a reference to the navigation drawer.
+        mDrawerLayout = findViewById(R.id.drawer_layout);
+
+        // Get a reference to the refresh layout
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
@@ -155,8 +129,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
 
-        mSwipeRefreshLayout.setDistanceToTriggerSync(600);// in dips
-        setNavigationViewListner();
+        // Set the distance in order to refresh.
+        mSwipeRefreshLayout.setDistanceToTriggerSync(600);
+
+        // Set the NavigationView listener.
+        setNavigationViewListener();
     }
 
     private void setHeaderLabel() {
@@ -221,8 +198,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void failure(RetrofitError error) {
-                fetchNewToken();
-                Log.d("TopArtistsFAILURE", error.toString());
+                fetchNewCode(MainActivity.this);
             }
         });
     }
@@ -241,28 +217,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void failure(RetrofitError error) {
-                fetchNewToken();
-                Log.d("TopTracksFAILURE", error.toString());
+                fetchNewCode(MainActivity.this);
             }
         });
     }
-
-    public void onRefreshTokenClicked(View v) {
-        spotifyApi.setAccessToken("");
-
-        LoginActivity.tokenManager.getNewToken(new myCallback() {
-            @Override
-            public void onSuccess(String a_token, String r_token) {
-                LoginActivity.tokenManager.setTokens(a_token, null);
-            }
-
-            @Override
-            public void onError(String err) {
-                Log.d("onError", "Failed to retrieve new access token.");
-            }
-        });
-    }
-
 
     public void onPopUpMenuClicked(final View view) {
         PopupMenu popupMenu = new PopupMenu(MainActivity.this, view);
@@ -284,9 +242,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         popupMenu.show();
     }
-
-
-
 
     private void fetchMyAvatar() {
         // Load my username or (display name)
@@ -314,6 +269,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .apply(RequestOptions.circleCropTransform())
                         .into(avatar);
 
+                // Show the avatar.
+                avatar.setVisibility(View.VISIBLE);
+
                 avatar2.setOnClickListener(new View.OnClickListener(){
                     public void onClick(View v) {
                         mDrawerLayout.openDrawer(GravityCompat.START);
@@ -325,8 +283,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             public void failure(RetrofitError error) {
-                fetchNewToken();
-                Log.d("getMe FAILURE", error.toString());
+                fetchNewCode(MainActivity.this);
             }
         });
     }
@@ -383,33 +340,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             @Override
             public void failure(RetrofitError error) {
+                fetchNewCode(MainActivity.this);
             }
         });
     }
 
     void onItemsLoadComplete() {
+        // We successfully loaded the whole page.
+        // So, reset the login attempts.
+        resetLoginAttempts();
+
         // Set the new top feed and update the RecyclerView
         mRecyclerViewAdapter.setTopFeed(feed);
         mRecyclerViewAdapter.notifyDataSetChanged();
 
-        // Stop refresh animation
+        // Stop the refresh animation
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-
-        if (requestCode == LoginActivity.REQUEST_CODE) {
-
-            AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
-
-            if (response.getType() == AuthenticationResponse.Type.TOKEN) {
-                String access_token = response.getAccessToken();
-                LoginActivity.tokenManager.setTokens(access_token, "");
-                spotifyApi.setAccessToken(access_token);
+        doActivityResult(requestCode, resultCode, intent, new myCallback() {
+            @Override
+            public void onSuccess() {
                 refreshItems();
             }
-        }
+        });
     }
 }

@@ -50,128 +50,52 @@ public class LoginActivity extends Activity
     protected static final String REDIRECT_URI = "simpleapp://callback";
     protected static final int REQUEST_CODE = 1337;
 
-    static TokenManager tokenManager;
+    private SharedPreferences sharedPrefs;
+    final String ACCESS_TOKEN = "applicationname.companydomain.simpleapp.TOKEN";
+    final String LOGGED_IN = "logged_in";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
-        // Create a new token manager
-        tokenManager = new TokenManager(LoginActivity.this);
+        sharedPrefs = this.getSharedPreferences(ACCESS_TOKEN, Context.MODE_PRIVATE);
+        boolean loggedIn = sharedPrefs.getBoolean(LOGGED_IN,false);
 
         Bundle args = getIntent().getExtras();
-        //LoginActivity.tokenManager.setTokens("BQDWq-FJ8toHagRz648z26gc-mAlgy0_StyL9ybB4ojJzbH1eV43g68bNHr0cIr5STjLwye3tPONS0Lx8S-u39xlVOl69EjRWyQ6rDrW_rN7_u19uOSOPHjwjFUsxceWFzo4sK8dSejYTvZRHan_v5OhQ8cszmrkEghjOKVVPw", "");
-
         if (args != null && args.getBoolean("login", false)) {
+            Log.d("TestLogin", "LOGGED OUT");
 
+            // We just logged out.
+            Editor editor = sharedPrefs.edit();
+            editor.putBoolean(LOGGED_IN, false);
+            editor.apply();
+
+            // Call logout() again to be safe.
             AuthenticationClient.logout(LoginActivity.this);
-
-            /*AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(LoginActivity.CLIENT_ID,
-                    AuthenticationResponse.Type.CODE, LoginActivity.REDIRECT_URI);
-            builder.setScopes(new String[]{"user-top-read", "user-read-private"});
-            builder.setShowDialog(true);
-            AuthenticationRequest request = builder.build();
-
-            //AuthenticationClient.openLoginInBrowser(this, request);
-            AuthenticationClient.openLoginActivity(LoginActivity.this, LoginActivity.REQUEST_CODE, request);*/
-        } else {
-            // Grab the access token
-            final String token = tokenManager.getToken();
-
-            // Check if the token is not null
-            if (token != null) {
-
-                Log.d("onCreate", "The token is not null");
-
-                // If it's not null, then launch the main activity
-                Intent intent2 = new Intent(this, MainActivity.class);
-                intent2.putExtra("ACCESS_TOKEN", token);
-                startActivity(intent2);
-                finish();
-            }
+        } else if (loggedIn) {
+            // If we're logged in, then attempt to log in.
+            showLoginPage(false);
         }
     }
 
-    protected void onNewIntent(Intent intent) {
-        super.onNewIntent(intent);
-        Log.d("onNewIntent", "WE GOT CALLED!!");
+    private void showLoginPage(boolean showDialog) {
+        // Open an authentication window.
+        AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
+                AuthenticationResponse.Type.CODE, REDIRECT_URI);
+        builder.setScopes(new String[]{"user-top-read", "user-read-private"});
+        builder.setShowDialog(showDialog);
+        AuthenticationRequest request = builder.build();
 
-        Uri uri = intent.getData();
-        if (uri != null) {
-            AuthenticationResponse response = AuthenticationResponse.fromUri(uri);
-
-            switch (response.getType()) {
-                // Response was successful and contains auth token
-                case CODE:
-                    Log.d("onNewIntent", "WE GOT THE CODE!!");
-                    try {
-                        // We pass in our authentication code
-                        LoginActivity.tokenManager.getAccessToken(response.getCode(), new myCallback() {
-                            @Override
-                            public void onSuccess(String a_token, String r_token) {
-                                // no errors
-                                Log.d("onSuccess access token", a_token);
-                                Log.d("onSuccess refresh token", r_token);
-
-                                LoginActivity.tokenManager.setTokens(a_token, r_token);
-
-                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                intent.putExtra("ACCESS_TOKEN", a_token);
-                                startActivity(intent);
-                                finish();
-                            }
-
-                            @Override
-                            public void onError(String err) {
-                                Log.d("onError", "Failed to retrieve new access token.");
-                            }
-                        });
-                    } catch (Exception e) {
-                        // Exception handler
-                    }
-
-                    break;
-
-                // Auth flow returned an error
-                case ERROR:
-                    // Handle error response
-                    break;
-
-                // Most likely auth flow was cancelled
-                default:
-                    // Handle other cases
-            }
-        }
+        // AuthenticationClient.openLoginInBrowser(this, request);
+        AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
     }
 
     public void onLoginButtonClicked(View v) {
-        // Grab the access token
-        final String token = tokenManager.getToken();
-
-        // Check if the token is null
-        if (token == null) {
-            // If so, open an authentication window.
-            AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
-                    AuthenticationResponse.Type.CODE, REDIRECT_URI);
-            builder.setScopes(new String[]{"user-top-read", "user-read-private"});
-            builder.setShowDialog(true);
-            AuthenticationRequest request = builder.build();
-
-            AuthenticationClient.logout(LoginActivity.this);
-
-            // AuthenticationClient.openLoginInBrowser(this, request);
-            AuthenticationClient.openLoginActivity(this, REQUEST_CODE, request);
-        } else {
-
-            // Otherwise, we already have our access token.
-            Log.d("AlreadyLoggedIn", token);
-
-            Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("ACCESS_TOKEN", token);
-            startActivity(intent);
-            finish();
-        }
+        // This is just to make sure that no one is logged in.
+        AuthenticationClient.logout(LoginActivity.this);
+        // Show the Spotify login page.
+        showLoginPage(true);
     }
 
     @Override
@@ -179,36 +103,21 @@ public class LoginActivity extends Activity
         super.onActivityResult(requestCode, resultCode, intent);
 
         if (requestCode == LoginActivity.REQUEST_CODE) {
-            Log.d("onActivityResult", "RECEIVED REQUEST CODE");
-
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
+            switch (response.getType()) {
+                // Response was successful and contains auth token
+                case CODE:
+                    // Set that we just logged in.
+                    Editor editor = sharedPrefs.edit();
+                    editor.putBoolean(LOGGED_IN, true);
+                    editor.apply();
 
-            if (response.getType() == AuthenticationResponse.Type.CODE) {
-                try {
-                    // We pass in our authentication code
-                    LoginActivity.tokenManager.getAccessToken(response.getCode(), new myCallback() {
-                        @Override
-                        public void onSuccess(String a_token, String r_token) {
-                            // no errors
-                            Log.d("onSuccess access token", a_token);
-                            Log.d("onSuccess refresh token", r_token);
-
-                            LoginActivity.tokenManager.setTokens(a_token, r_token);
-
-                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                            intent.putExtra("ACCESS_TOKEN", a_token);
-                            startActivity(intent);
-                            finish();
-                        }
-
-                        @Override
-                        public void onError(String err) {
-                            Log.d("onError", "Failed to retrieve new access token.");
-                        }
-                    });
-                } catch (Exception e) {
-                    // Exception handler
-                }
+                    // Switch to MainActivity.
+                    Intent loginToMainIntent = new Intent(LoginActivity.this,
+                            MainActivity.class);
+                    loginToMainIntent.putExtra("ACCESS_TOKEN", response.getCode());
+                    startActivity(loginToMainIntent);
+                    finish();
             }
         }
     }

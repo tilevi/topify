@@ -15,6 +15,9 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -23,6 +26,7 @@ import org.w3c.dom.Text;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Tracks;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -31,7 +35,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 import retrofit.RetrofitError;
 
-public class ArtistDetailsActivity extends AppCompatActivity {
+public class ArtistDetailsActivity extends SpotifyCodeActivity {
     private TextView artistBio = null;
     private WebView myWebView;
 
@@ -72,6 +76,26 @@ public class ArtistDetailsActivity extends AppCompatActivity {
         html.append("</body>");
 
         myWebView.loadData(html.toString(), "text/html", null);
+    }
+
+    private void fetchArtistTopTracks() {
+        MainActivity.spotify.getArtistTopTrack(artist_id, "US",
+                new retrofit.Callback<Tracks>() {
+                    @Override
+                    public void success(Tracks tracks, retrofit.client.Response response) {
+                        int i = 0;
+                        while (i < 2 && tracks.tracks.get(i) != null) {
+                            topTracks.add(tracks.tracks.get(i).id);
+                            i++;
+                        }
+                        retrievedTopTracks();
+                    }
+
+                    @Override
+                    public void failure(RetrofitError error) {
+                        fetchNewCode(ArtistDetailsActivity.this);
+                    }
+                });
     }
 
     @Override
@@ -121,7 +145,7 @@ public class ArtistDetailsActivity extends AppCompatActivity {
 
             int popInt = (int)(popularity);
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
-            progressBar.setProgress(100);
+            progressBar.setProgress(popInt);
 
             TextView popView = (TextView) findViewById(R.id.popView);
             popView.setText("Popularity: " + popInt + "%");
@@ -132,27 +156,12 @@ public class ArtistDetailsActivity extends AppCompatActivity {
             TextView artistName = (TextView) findViewById(R.id.artistName);
             artistName.setText(artist_name);
 
-
-            MainActivity.spotify.getArtistTopTrack(artist_id, "US", new retrofit.Callback<Tracks>() {
-                @Override
-                public void success(Tracks tracks, retrofit.client.Response response) {
-                    int i = 0;
-                    while (i < 2 && tracks.tracks.get(i) != null) {
-                        topTracks.add(tracks.tracks.get(i).id);
-                        i++;
-                    }
-                    retrievedTopTracks();
-                }
-
-                @Override
-                public void failure(RetrofitError error) {
-                }
-            });
-
-
+            // Get the artist's top tracks.
+            fetchArtistTopTracks();
 
             OkHttpClient client = new OkHttpClient();
-            String url = "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist=" + artist_name + "&api_key=9f5228be9f2d49c1700e60d8d3e02eb3&format=json";
+            String url = "http://ws.audioscrobbler.com/2.0/?method=artist.getinfo&artist="
+                    + artist_name + "&api_key=9f5228be9f2d49c1700e60d8d3e02eb3&format=json";
 
             Request request = new Request.Builder()
                     .url(url)
@@ -161,7 +170,6 @@ public class ArtistDetailsActivity extends AppCompatActivity {
             client.newCall(request).enqueue(new Callback() {
                 @Override
                 public void onFailure(Call call, IOException e) {
-                    Log.d("onFailure", "Failed to fetch new access token.");
                     call.cancel();
                 }
 
@@ -172,12 +180,13 @@ public class ArtistDetailsActivity extends AppCompatActivity {
                     try {
                         JSONObject json = new JSONObject(myResponse);
                         if (json != null) {
-                            JSONObject j2 = json.getJSONObject("artist");
-                            if (j2 != null) {
-                                JSONObject j3 = j2.getJSONObject("bio");
-                                if (j3 != null) {
-                                    String summary = j3.getString("summary");
-                                    summary = summary.substring(0, (summary.substring(0, summary.lastIndexOf("<a"))).lastIndexOf(".") + 1);
+                            JSONObject jsonArtist = json.getJSONObject("artist");
+                            if (jsonArtist != null) {
+                                JSONObject jsonBio = jsonArtist.getJSONObject("bio");
+                                if (jsonBio != null) {
+                                    String summary = jsonBio.getString("summary");
+                                    summary = summary.substring(0, (summary.substring(0,
+                                            summary.lastIndexOf("<a"))).lastIndexOf(".") + 1);
                                     setBioText(summary.toString());
                                 }
                             }
@@ -195,5 +204,16 @@ public class ArtistDetailsActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         myWebView.destroy();
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
+        doActivityResult(requestCode, resultCode, intent, new myCallback() {
+            @Override
+            public void onSuccess() {
+                fetchArtistTopTracks();
+            }
+        });
     }
 }

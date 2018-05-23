@@ -283,7 +283,7 @@ public class MainActivity extends SpotifyCodeActivity
                 View header = navigationView.getHeaderView(0);
                 TextView username_ye = (TextView) header.findViewById(R.id.textView3);
                 ImageView avatarView_nav = (ImageView) header.findViewById(R.id.avatarView3);
-                username_ye.setText("username");
+                username_ye.setText(displayName);
                 Glide.with(MainActivity.this)
                         .load(url)
                         .apply(RequestOptions.circleCropTransform())

@@ -278,6 +278,17 @@ public class MainActivity extends SpotifyCodeActivity
                     }
                 });
 
+                //set the avatar in the nav view
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                View header = navigationView.getHeaderView(0);
+                TextView username_ye = (TextView) header.findViewById(R.id.textView3);
+                ImageView avatarView_nav = (ImageView) header.findViewById(R.id.avatarView3);
+                username_ye.setText("username");
+                Glide.with(MainActivity.this)
+                        .load(url)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(avatarView_nav);
+
                 // Fetch our top artists and tracks
                 fetchTopArtists();
             }

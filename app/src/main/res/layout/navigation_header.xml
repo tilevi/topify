@@ -7,7 +7,7 @@
     android:background="@color/CategoryHeader">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/avatarView3"
         android:layout_width="35dp"
         android:layout_height="35dp"
         android:layout_marginBottom="16dp"
@@ -30,6 +30,6 @@
         android:text="fisheater05"
         android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageView2"
+        app:layout_constraintStart_toEndOf="@+id/avatarView3"
         app:layout_constraintTop_toTopOf="parent" />
 </android.support.constraint.ConstraintLayout>

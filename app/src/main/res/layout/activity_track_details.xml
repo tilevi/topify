@@ -131,7 +131,7 @@
                     android:indeterminateOnly="false"
                     android:max="100"
                     android:progress="50"
-                    android:progressDrawable="@drawable/progress_bar_states"
+                    android:progressDrawable="@drawable/progress_bar_happy"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="0.0"

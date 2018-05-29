@@ -6,7 +6,8 @@
     <color name="Header">#252f41</color>
     <color name="CategoryHeader">#323C4E</color>
     <color name="Green">#00976f</color>
-    <color name="Blue">#0000FF</color>
-    <color name="Teal">#008080</color>
-    <color name="Navy">#000080</color>
+    <color name="Blue">#22959A</color>
+    <color name="Teal">#165773</color>
+    <color name="Navy">#134D59</color>
+    <color name="Lime">#428C57</color>
 </resources>

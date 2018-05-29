@@ -8,14 +8,63 @@ import android.webkit.WebSettings;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
+import android.content.Intent;
+import android.support.constraint.ConstraintLayout;
+
+import android.util.Log;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
+
+import com.bumptech.glide.Glide;
+import com.spotify.sdk.android.authentication.AuthenticationClient;
+import com.spotify.sdk.android.authentication.AuthenticationRequest;
+import com.spotify.sdk.android.authentication.AuthenticationResponse;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.w3c.dom.Text;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import kaaes.spotify.webapi.android.models.Artist;
+import kaaes.spotify.webapi.android.models.Tracks;
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import retrofit.RetrofitError;
+
 public class TrackDetailsActivity extends AppCompatActivity {
 
     private WebView myWebView;
+
+    private String track_id = "";
+    private String track_title = "";
+    private String track_artist = "";
+
+
+    public void onRelatedTracksClicked(View v) {
+        Intent intent = new Intent(this, RelatedTracks.class);
+        intent.putExtra("track_id", track_id);
+        intent.putExtra("track_title", track_title);
+        intent.putExtra("track_artist", track_artist);
+        startActivity(intent);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_track_details);
+
+        myWebView = (WebView) findViewById(R.id.webView2);
+
+        WebSettings webSettings = myWebView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+
+        myWebView.setWebChromeClient(new WebChromeClient());
 
         Bundle args = getIntent().getExtras();
 
@@ -30,7 +79,6 @@ public class TrackDetailsActivity extends AppCompatActivity {
 
             myWebView = (WebView) findViewById(R.id.webView);
 
-            WebSettings webSettings = myWebView.getSettings();
             webSettings.setJavaScriptEnabled(true);
 
             myWebView.setWebChromeClient(new WebChromeClient());

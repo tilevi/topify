@@ -149,6 +149,14 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
             int popInt = (int)(popularity);
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
             progressBar.setProgress(popInt);
+            //our progress bars need different colors
+            // the res/drawable directory make a new resource
+            // that's p much identical to progbarstates.xml
+            // onCreate, set the progress, grab the textview
+            // Set the rank (#d track) top_artist
+            // button top right related tracks
+            // right now the button doesnt have to do anything
+            // CLEAN THE PROJECT BEFORE PUSH
 
             TextView popView = (TextView) findViewById(R.id.popView);
             popView.setText("Popularity: " + popInt + "%");

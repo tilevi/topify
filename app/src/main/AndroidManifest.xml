@@ -36,14 +36,22 @@
         <activity
             android:name="com.spotify.sdk.android.authentication.LoginActivity"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".MainActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".MainActivity"
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ArtistDetailsActivity"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_artist_details"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
-        <activity android:name=".TrackDetailsActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".RelatedArtists" android:screenOrientation="portrait"></activity>
+        <activity
+            android:name=".TrackDetailsActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".RelatedArtists"
+            android:screenOrientation="portrait" />
+        <activity android:name=".RelatedTracks" />
+        <activity android:name=".RecyclerViewAdapterTracks"></activity>
     </application>
 
 </manifest>

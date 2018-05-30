@@ -278,6 +278,10 @@ public class MainActivity extends SpotifyCodeActivity
                     }
                 });
 
+
+
+
+
                 // Fetch our top artists and tracks
                 fetchTopArtists();
             }

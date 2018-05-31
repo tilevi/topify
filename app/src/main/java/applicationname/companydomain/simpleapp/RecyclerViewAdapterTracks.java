@@ -103,7 +103,7 @@ public class RecyclerViewAdapterTracks extends RecyclerView.Adapter<RecyclerView
                         intent.putExtra("track_id", trackItem.getID());
                         intent.putExtra("track_title", trackItem.getTitle());
                         intent.putExtra("track_artist", trackItem.getArtist());
-                        intent.putExtra("top_track", trackItem.getRank());
+                        intent.putExtra("top_track", -1);
 
                         context.startActivity(intent);
                     }

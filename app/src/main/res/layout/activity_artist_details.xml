@@ -11,7 +11,7 @@
         android:id="@+id/scrollView2"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/homeButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -104,7 +104,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/aboutView"
                 android:layout_width="match_parent"
                 android:layout_height="18dp"
                 android:layout_marginEnd="8dp"
@@ -139,7 +139,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                app:layout_constraintTop_toBottomOf="@+id/aboutView" />
 
             <android.support.constraint.ConstraintLayout
                 android:id="@+id/topTrackLayout"
@@ -192,7 +192,7 @@
             </android.support.constraint.ConstraintLayout>
 
             <TextView
-                android:id="@+id/textView99"
+                android:id="@+id/trackView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -216,5 +216,29 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/homeBar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/Header"
+        android:minHeight="36dp"
+        android:theme="?attr/actionBarTheme"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/homeButton"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="@+id/homeBar"
+        app:layout_constraintEnd_toEndOf="@+id/homeBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/homeBar"
+        android:clickable="true"
+        app:srcCompat="@drawable/home" />
 
 </android.support.constraint.ConstraintLayout>

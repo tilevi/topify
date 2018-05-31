@@ -40,6 +40,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private final static int TYPE_CATEGORY = 0;
     private final static int TYPE_ARTIST = 1;
     private final static int TYPE_TRACK = 2;
+    private final static int TYPE_NO_RESULTS = 3;
 
     private List<Object> topFeed = new ArrayList();
     private Context context;
@@ -61,8 +62,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             return TYPE_ARTIST;
         } else if (topFeed.get(pos) instanceof TrackItem) {
             return TYPE_TRACK;
+        } else if (topFeed.get(pos) instanceof CategoryItem) {
+            return TYPE_CATEGORY;
         }
-        return TYPE_CATEGORY;
+        return TYPE_NO_RESULTS;
     }
 
     // Invoked by layout manager to replace the contents of the views
@@ -84,6 +87,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 TrackItem trackItem = (TrackItem) topFeed.get(position);
                 TrackViewHolder trackViewHolder = (TrackViewHolder) holder;
                 trackViewHolder.setDetails(trackItem);
+                break;
+            case TYPE_NO_RESULTS:
+                NoResultsItem noResultsItem = (NoResultsItem) topFeed.get(position);
+                NoResultsViewHolder noResultsViewHolder = (NoResultsViewHolder) holder;
+                noResultsViewHolder.setDetails(noResultsItem);
                 break;
         }
     }
@@ -119,11 +127,26 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         .inflate(layout, parent, false);
                 viewHolder = new TrackViewHolder(trackView);
                 break;
+            case TYPE_NO_RESULTS:
+                layout = R.layout.layout_noresults;
+                View noResultsView = LayoutInflater.from(parent.getContext())
+                        .inflate(layout, parent, false);
+                viewHolder = new NoResultsViewHolder(noResultsView);
+                break;
             default:
                 viewHolder = null;
         }
 
         return viewHolder;
+    }
+
+    // Super simple.
+    public class NoResultsViewHolder extends RecyclerView.ViewHolder {
+        public NoResultsViewHolder(View itemView) {
+            super(itemView);
+        }
+        public void setDetails(NoResultsItem noResultsItem) {
+        }
     }
 
     public class CategoryViewHolder extends RecyclerView.ViewHolder {
@@ -191,10 +214,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
             itemName.setText(artistItem.getName());
 
-            Glide.with(context)
-                    .load(artistItem.getURL())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(artistImage);
+
+            // Get the URL
+            String url = artistItem.getURL();
+
+            if (!(url.equals(""))) {
+                Glide.with(context)
+                        .load(artistItem.getURL())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(artistImage);
+            } else {
+                Glide.with(context)
+                        .load(R.drawable.unknown)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(artistImage);
+            }
         }
     }
 
@@ -241,9 +275,18 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             itemName.setText(trackItem.getTitle());
             artistName.setText(trackItem.getArtist());
 
-            Glide.with(context)
-                    .load(trackItem.getURL())
-                    .into(trackImage);
+            // Get the URL
+            String url = trackItem.getURL();
+
+            if (!(url.equals(""))) {
+                Glide.with(context)
+                        .load(trackItem.getURL())
+                        .into(trackImage);
+            } else {
+                Glide.with(context)
+                        .load(R.drawable.unknown)
+                        .into(trackImage);
+            }
         }
     }
 }

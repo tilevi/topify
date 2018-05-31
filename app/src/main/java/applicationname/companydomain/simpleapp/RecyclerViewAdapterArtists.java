@@ -118,10 +118,20 @@ public class RecyclerViewAdapterArtists extends RecyclerView.Adapter<RecyclerVie
 
             itemName.setText(artistItem.getName());
 
-            Glide.with(context)
-                    .load(artistItem.getURL())
-                    .apply(RequestOptions.circleCropTransform())
-                    .into(artistImage);
+            // Get the URL
+            String url = artistItem.getURL();
+
+            if (!(url.equals(""))) {
+                Glide.with(context)
+                        .load(artistItem.getURL())
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(artistImage);
+            } else {
+                Glide.with(context)
+                        .load(R.drawable.unknown)
+                        .apply(RequestOptions.circleCropTransform())
+                        .into(artistImage);
+            }
         }
     }
 }

@@ -75,14 +75,20 @@ public class LoginActivity extends Activity
             AuthenticationClient.logout(LoginActivity.this);
         } else if (loggedIn) {
             // If we're logged in, then attempt to log in.
-            showLoginPage(false);
+            // showLoginPage(false);
+
+            Intent loginToMainIntent = new Intent(LoginActivity.this,
+                    MainActivity.class);
+            loginToMainIntent.putExtra("ACCESS_TOKEN", "");
+            startActivity(loginToMainIntent);
+            finish();
         }
     }
 
     private void showLoginPage(boolean showDialog) {
         // Open an authentication window.
         AuthenticationRequest.Builder builder = new AuthenticationRequest.Builder(CLIENT_ID,
-                AuthenticationResponse.Type.CODE, REDIRECT_URI);
+                AuthenticationResponse.Type.TOKEN, REDIRECT_URI);
         builder.setScopes(new String[]{"user-top-read", "user-read-private"});
         builder.setShowDialog(showDialog);
         AuthenticationRequest request = builder.build();
@@ -106,7 +112,7 @@ public class LoginActivity extends Activity
             AuthenticationResponse response = AuthenticationClient.getResponse(resultCode, intent);
             switch (response.getType()) {
                 // Response was successful and contains auth token
-                case CODE:
+                case TOKEN:
                     // Set that we just logged in.
                     Editor editor = sharedPrefs.edit();
                     editor.putBoolean(LOGGED_IN, true);
@@ -115,7 +121,7 @@ public class LoginActivity extends Activity
                     // Switch to MainActivity.
                     Intent loginToMainIntent = new Intent(LoginActivity.this,
                             MainActivity.class);
-                    loginToMainIntent.putExtra("ACCESS_TOKEN", response.getCode());
+                    loginToMainIntent.putExtra("ACCESS_TOKEN", response.getAccessToken());
                     startActivity(loginToMainIntent);
                     finish();
             }

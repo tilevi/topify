@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -15,8 +17,8 @@ import retrofit.client.Response;
 
 public class RelatedArtists extends SpotifyCodeActivity {
 
-    private RecyclerViewAdapterArtists mRecyclerViewAdapter;
-    private ArrayList<ArtistItem> feed;
+    private RecyclerViewAdapter mRecyclerViewAdapter;
+    private ArrayList<Object> feed;
 
     private String artist_id = "";
     private String artist_name = "";
@@ -27,21 +29,25 @@ public class RelatedArtists extends SpotifyCodeActivity {
             public void success(Artists artists, Response response) {
 
                 int numArtists = Math.min(artists.artists.size(), 10);
-                feed = new ArrayList<ArtistItem>();
+                feed = new ArrayList<Object>();
 
                 for (int i = 0; i < numArtists; i++) {
+
+                    String sdURL = "";
+                    String hdURL = "";
+
+                    if (artists.artists.get(i).images.size() > 0) {
+                        sdURL = artists.artists.get(i).images.get(artists.artists.get(i).images.size() - 1).url;
+                        hdURL = artists.artists.get(i).images.get(0).url;
+                    }
+
                     feed.add(new ArtistItem(artists.artists.get(i).name.toString(),
-                            artists.artists.get(i).images.get(artists.artists.get(i).images.size() - 1).url,
-                            artists.artists.get(i).images.get(0).url,
+                            sdURL,
+                            hdURL,
                             (i % 2) == 0, artists.artists.get(i).id,
-                            (i+1),
+                            -1,
                             artists.artists.get(i).popularity));
                 }
-
-                RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                mRecyclerViewAdapter = new RecyclerViewAdapterArtists(RelatedArtists.this, recyclerView);
-                recyclerView.setAdapter(mRecyclerViewAdapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(RelatedArtists.this));
 
                 mRecyclerViewAdapter.setTopFeed(feed);
                 mRecyclerViewAdapter.notifyDataSetChanged();
@@ -73,6 +79,24 @@ public class RelatedArtists extends SpotifyCodeActivity {
 
             fetchRelatedArtists();
         }
+
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        mRecyclerViewAdapter = new RecyclerViewAdapter(RelatedArtists.this, recyclerView);
+        recyclerView.setAdapter(mRecyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(RelatedArtists.this));
+
+        ImageView homeButton = (ImageView) findViewById(R.id.homeButton);
+        homeButton.setOnClickListener(new View.OnClickListener(){
+            public void onClick(View v) {
+                /*
+                    Source:
+                    https://stackoverflow.com/questions/26468619/how-to-finish-all-activities-except-main-activity-and-call-another-activity
+                 */
+                Intent intent = new Intent(RelatedArtists.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP |  Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override

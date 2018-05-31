@@ -57,6 +57,9 @@ public class MainActivity extends SpotifyCodeActivity
     private ArrayList<Object> feed;
     private String time_range = "short_term";
 
+    private boolean noArtists = false;
+    private boolean noTracks = false;
+
     public static final Map<String, String> TIME_LABELS = createTimeLabels();
     private static Map<String, String> createTimeLabels() {
         Map<String, String> labels = new HashMap<String, String>();
@@ -116,6 +119,13 @@ public class MainActivity extends SpotifyCodeActivity
             fetchMyAvatar();
         }
 
+        // Recycler View
+        RecyclerView recyclerView = findViewById(R.id.recyclerView);
+        mRecyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this, recyclerView);
+        recyclerView.setAdapter(mRecyclerViewAdapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+
         // Get a reference to the navigation drawer.
         mDrawerLayout = findViewById(R.id.drawer_layout);
 
@@ -163,35 +173,39 @@ public class MainActivity extends SpotifyCodeActivity
         Map<String, Object> options = new HashMap<>();
         options.put("time_range", time_range);
 
+        feed = new ArrayList<>();
+
+        feed.add(new CategoryItem("Top Artists", time_range));
+
+
         spotify.getTopArtists(options, new Callback<Pager<Artist>>() {
             @Override
             public void success(Pager<Artist> artists, Response response) {
+                if (artists.items.size() > 0) {
+                    noArtists = false;
 
-                feed = new ArrayList<>();
 
-                feed.add(new CategoryItem("Top Artists", time_range));
+                    for (int i = 0; i < artists.items.size(); i++) {
 
-                for (int i = 0; i < artists.items.size(); i++) {
-                    feed.add(new ArtistItem(artists.items.get(i).name.toString(),
-                            artists.items.get(i).images.get(artists.items.get(i).images.size() - 1).url,
-                            artists.items.get(i).images.get(0).url,
-                            (i % 2) == 0, artists.items.get(i).id,
-                            (i+1),
-                            artists.items.get(i).popularity));
-                }
+                        String sdURL = "";
+                        String hdURL = "";
 
-                RecyclerView recyclerView = findViewById(R.id.recyclerView);
-                mRecyclerViewAdapter = new RecyclerViewAdapter(MainActivity.this, recyclerView);
-                recyclerView.setAdapter(mRecyclerViewAdapter);
-                recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+                        if (artists.items.get(i).images != null && artists.items.get(i).images.size() > 0) {
+                            sdURL = artists.items.get(i).images.get(artists.items.get(i).images.size() - 1).url;
+                            hdURL = artists.items.get(i).images.get(0).url;
+                        }
 
-                mRecyclerViewAdapter.setOnItemClickListener(new RecyclerViewAdapter.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(int position) {
-                        ArtistItem artistItem = (ArtistItem) feed.get(position);
-                        Log.d("OnArtistClicked", artistItem.getName());
+                        feed.add(new ArtistItem(artists.items.get(i).name.toString(),
+                                sdURL,
+                                hdURL,
+                                (i % 2) == 0, artists.items.get(i).id,
+                                (i + 1),
+                                artists.items.get(i).popularity));
                     }
-                });
+                } else {
+                    noArtists = true;
+                    feed.add(new NoResultsItem());
+                }
 
                 fetchTopTracks();
             }
@@ -207,11 +221,11 @@ public class MainActivity extends SpotifyCodeActivity
         Map<String, Object> options = new HashMap<>();
         options.put("time_range", time_range);
 
+        feed.add(new CategoryItem("Top Tracks", time_range));
+
         spotify.getTopTracks(options, new Callback<Pager<Track>>() {
             @Override
             public void success(Pager<Track> tracks, Response response) {
-
-                feed.add(new CategoryItem("Top Tracks", time_range));
                 getTrackFeatures(tracks.items);
             }
 
@@ -318,43 +332,62 @@ public class MainActivity extends SpotifyCodeActivity
             }
         }
 
-        spotify.getTracksAudioFeatures(sb.toString(), new Callback<AudioFeaturesTracks>() {
-            @Override
-            public void success(AudioFeaturesTracks features, Response response) {
+        if (items.size() > 0) {
+            noTracks = false;
 
-                List<AudioFeaturesTrack> audioFeaturesTracks = features.audio_features;
+            spotify.getTracksAudioFeatures(sb.toString(), new Callback<AudioFeaturesTracks>() {
+                @Override
+                public void success(AudioFeaturesTracks features, Response response) {
 
-                for (int i = 0; i < audioFeaturesTracks.size(); i++) {
-                    if (audioFeaturesTracks.get(i) != null) {
-                        feed.add(new TrackItem(items.get(i).name.toString(),
-                                items.get(i).artists.get(0).name.toString(),
-                                items.get(i).album.images.get(items.get(i).album.images.size() - 1).url,
-                                (i % 2) == 0, items.get(i).id,
-                                (i+1),
-                                items.get(i).popularity,
-                                audioFeaturesTracks.get(i).danceability,
-                                audioFeaturesTracks.get(i).energy,
-                                audioFeaturesTracks.get(i).valence));
-                    } else {
-                        feed.add(new TrackItem(items.get(i).name.toString(),
-                                items.get(i).artists.get(0).name.toString(),
-                                items.get(i).album.images.get(items.get(i).album.images.size() - 1).url,
-                                (i % 2) == 0, items.get(i).id,
-                                (i+1),
-                                items.get(i).popularity,
-                                -1f,
-                                -1f,
-                                -1f));
+                    List<AudioFeaturesTrack> audioFeaturesTracks = features.audio_features;
+
+                    for (int i = 0; i < items.size(); i++) {
+
+                        String url = "";
+                        String artist = "";
+
+                        if (items.get(i).album != null && items.get(i).album.images != null
+                                && items.get(i).album.images.size() > 0) {
+                            url = items.get(i).album.images.get(items.get(i).album.images.size() - 1).url;
+                            artist = items.get(i).artists.get(0).name.toString();
+                        }
+
+                        if (audioFeaturesTracks.get(i) != null) {
+                            feed.add(new TrackItem(items.get(i).name.toString(),
+                                    artist,
+                                    url,
+                                    (i % 2) == 0, items.get(i).id,
+                                    (i + 1),
+                                    items.get(i).popularity,
+                                    audioFeaturesTracks.get(i).danceability,
+                                    audioFeaturesTracks.get(i).energy,
+                                    audioFeaturesTracks.get(i).valence));
+                        } else {
+                            feed.add(new TrackItem(items.get(i).name.toString(),
+                                    artist,
+                                    url,
+                                    (i % 2) == 0, items.get(i).id,
+                                    (i + 1),
+                                    items.get(i).popularity,
+                                    -1f,
+                                    -1f,
+                                    -1f));
+                        }
                     }
+                    onItemsLoadComplete();
                 }
-                onItemsLoadComplete();
-            }
 
-            @Override
-            public void failure(RetrofitError error) {
-                fetchNewCode(MainActivity.this);
-            }
-        });
+                @Override
+                public void failure(RetrofitError error) {
+                    fetchNewCode(MainActivity.this);
+                }
+            });
+        } else {
+            noTracks = true;
+            feed.add(new NoResultsItem());
+
+            onItemsLoadComplete();
+        }
     }
 
     void onItemsLoadComplete() {
@@ -363,11 +396,22 @@ public class MainActivity extends SpotifyCodeActivity
         resetLoginAttempts();
 
         // Set the new top feed and update the RecyclerView
-        mRecyclerViewAdapter.setTopFeed(feed);
-        mRecyclerViewAdapter.notifyDataSetChanged();
+        if (mRecyclerViewAdapter != null && feed != null) {
+            mRecyclerViewAdapter.setTopFeed(feed);
+            mRecyclerViewAdapter.notifyDataSetChanged();
 
-        // Stop the refresh animation
-        mSwipeRefreshLayout.setRefreshing(false);
+            // Stop the refresh animation
+            mSwipeRefreshLayout.setRefreshing(false);
+
+            // If there are no results, try going to the next duration term.
+            if (noArtists && noTracks) {
+                if (time_range.equals("short_term")) {
+                    onMediumTermClicked(null);
+                } else if (time_range.equals("medium_term")) {
+                    onLongTermClicked(null);
+                }
+            }
+        }
     }
 
     @Override

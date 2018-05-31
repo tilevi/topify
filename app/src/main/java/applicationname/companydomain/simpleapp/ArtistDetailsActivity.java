@@ -5,6 +5,7 @@ import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
@@ -43,12 +45,27 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
     private String artist_id = "";
     private String artist_name = "";
 
-    private void setBioText(final String text) {
+    private void setBioText(final String text, final boolean isNull) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                artistBio.setText(text);
-                Log.d("ArtistBio", "set text");
+                if (isNull) {
+                    TextView aboutView = (TextView) findViewById(R.id.aboutView);
+                    aboutView.setVisibility(View.GONE);
+                    artistBio.setVisibility(View.GONE);
+                } else {
+                    artistBio.setText(text);
+                }
+            }
+        });
+    }
+
+    private void hideTopTracks() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                TextView trackView = (TextView) findViewById(R.id.trackView);
+                trackView.setVisibility(View.GONE);
             }
         });
     }
@@ -61,21 +78,23 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
     }
 
     private void retrievedTopTracks() {
+        if (topTracks.size() <= 0) {
+            hideTopTracks();
+        } else {
+            StringBuilder html = new StringBuilder("");
 
-        StringBuilder html = new StringBuilder("");
+            html.append("<body style='margin:0;padding:0;'>");
 
-        html.append("<body style='margin:0;padding:0;'>");
+            int i = 0;
+            while (i < topTracks.size()) {
+                html.append("<iframe src=\"https://open.spotify.com/embed/track/" + topTracks.get(i)
+                        + "\" width=\"100%\" height=\"80px\" frameborder=\"0\" allowtransparency=\"true\"></iframe>");
+                i++;
+            }
 
-        int i = 0;
-        while (i < topTracks.size()) {
-            html.append("<iframe src=\"https://open.spotify.com/embed/track/" + topTracks.get(i)
-                    + "\" width=\"100%\" height=\"80px\" frameborder=\"0\" allowtransparency=\"true\"></iframe>");
-            i++;
+            html.append("</body>");
+            myWebView.loadData(html.toString(), "text/html", null);
         }
-
-        html.append("</body>");
-
-        myWebView.loadData(html.toString(), "text/html", null);
 
         // Reset the login attempts.
         resetLoginAttempts();
@@ -87,7 +106,7 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
                     @Override
                     public void success(Tracks tracks, retrofit.client.Response response) {
                         int i = 0;
-                        while (i < 2 && tracks.tracks.get(i) != null) {
+                        while (i < 2 && i < tracks.tracks.size() && tracks.tracks.get(i) != null) {
                             topTracks.add(tracks.tracks.get(i).id);
                             i++;
                         }
@@ -134,9 +153,15 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
 
             ImageView artistImage = (ImageView) findViewById(R.id.imageView);
 
-            Glide.with(ArtistDetailsActivity.this)
-                    .load(artist_url)
-                    .into(artistImage);
+            if (!artist_url.equals("")) {
+                Glide.with(ArtistDetailsActivity.this)
+                        .load(artist_url)
+                        .into(artistImage);
+            } else {
+                Glide.with(ArtistDetailsActivity.this)
+                        .load(R.drawable.unknown)
+                        .into(artistImage);
+            }
 
             TextView topArtistRank = (TextView) findViewById(R.id.topArtistRank);
 
@@ -146,7 +171,7 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
                 topArtistRank.setText("#" + top_artist + " Artist");
             }
 
-            int popInt = (int)(popularity);
+            int popInt = (int) (popularity);
             ProgressBar progressBar = (ProgressBar) findViewById(R.id.progressBar1);
             progressBar.setProgress(popInt);
             //our progress bars need different colors
@@ -162,7 +187,6 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
             popView.setText("Popularity: " + popInt + "%");
 
             artistBio = (TextView) findViewById(R.id.artistBio);
-
 
             TextView artistName = (TextView) findViewById(R.id.artistName);
             artistName.setText(artist_name);
@@ -190,6 +214,8 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
 
                     try {
                         JSONObject json = new JSONObject(myResponse);
+                        boolean isNull = false;
+
                         if (json != null) {
                             JSONObject jsonArtist = json.getJSONObject("artist");
                             if (jsonArtist != null) {
@@ -198,7 +224,13 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
                                     String summary = jsonBio.getString("summary");
                                     summary = summary.substring(0, (summary.substring(0,
                                             summary.lastIndexOf("<a"))).lastIndexOf(".") + 1);
-                                    setBioText(summary.toString());
+                                    String summaryString = summary.toString();
+
+                                    if (summaryString.equals("")) {
+                                        isNull = true;
+                                    }
+
+                                    setBioText(summaryString, isNull);
                                 }
                             }
                         }
@@ -207,7 +239,30 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
                     }
                 }
             });
+
             artistBio.setText("");
+
+            // Home image button
+            ImageView homeButton = (ImageView) findViewById(R.id.homeButton);
+
+            if (top_artist == -1) {
+                homeButton.setOnClickListener(new View.OnClickListener() {
+                    public void onClick(View v) {
+                    /*
+                        Source:
+                        https://stackoverflow.com/questions/26468619/how-to-finish-all-activities-except-main-activity-and-call-another-activity
+                     */
+                        Intent intent = new Intent(ArtistDetailsActivity.this, MainActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                        startActivity(intent);
+                    }
+                });
+            } else {
+                Toolbar homeBar = (Toolbar) findViewById(R.id.homeBar);
+                homeBar.setVisibility(View.GONE);
+                homeButton.setVisibility(View.GONE);
+            }
+
         }
     }
 

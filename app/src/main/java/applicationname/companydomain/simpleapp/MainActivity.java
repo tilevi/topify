@@ -1,5 +1,20 @@
 package applicationname.companydomain.simpleapp;
 
+/*
+    Code References:
+
+        Pull to refresh:
+                http://sapandiwakar.in/pull-to-refresh-for-android-recyclerview-or-any-other-vertically-scrolling-view/
+
+        RecyclerView with multiple ViewHolders:
+                http://www.digitstory.com/recyclerview-multiple-viewholders/
+
+        Home icon:
+                https://cdn4.iconfinder.com/data/icons/pictype-free-vector-icons/16/home-512.png
+
+        Question mark image:
+                http://www.cartoomics.it/wp-content/uploads/2018/02/bianco-punto-interrogativo-su-uno-sfondo-circolare-nero_318-35996.jpg
+ */
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;

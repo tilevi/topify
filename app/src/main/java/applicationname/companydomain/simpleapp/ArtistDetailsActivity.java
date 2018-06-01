@@ -1,5 +1,10 @@
 package applicationname.companydomain.simpleapp;
 
+/*
+    Code reference for the layouts:
+    https://stackoverflow.com/questions/43977565/is-it-possible-to-increase-the-height-of-the-line-inside-the-progress-bar-androi
+ */
+
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -83,7 +88,7 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
         } else {
             StringBuilder html = new StringBuilder("");
 
-            html.append("<body style='margin:0;padding:0;'>");
+            html.append("<body style='margin:0;padding:0;background:#252f41'>");
 
             int i = 0;
             while (i < topTracks.size()) {
@@ -138,7 +143,7 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
             artist_id = args.getString("artist_id", "");
             artist_name = args.getString("artist_name", "");
             String artist_url = args.getString("artist_url", "");
-            Integer top_artist = args.getInt("top_artist", -1);
+            int top_artist = args.getInt("top_artist", -1);
 
             float popularity = args.getFloat("popularity", -1);
 
@@ -262,7 +267,6 @@ public class ArtistDetailsActivity extends SpotifyCodeActivity {
                 homeBar.setVisibility(View.GONE);
                 homeButton.setVisibility(View.GONE);
             }
-
         }
     }
 

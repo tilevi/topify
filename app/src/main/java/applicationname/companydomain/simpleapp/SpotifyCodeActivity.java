@@ -17,8 +17,8 @@ public class SpotifyCodeActivity extends AppCompatActivity {
     }
 
     protected void fetchNewCode(Activity act) {
-        // If we fail to log in after 1 retry, redirect to the main page.
-        if (numberOfLoginAttempts > 0) {
+        // If we fail to log in after 2 retries, redirect to the main page.
+        if (numberOfLoginAttempts > 1) {
             logOut(act);
             return;
         }
@@ -36,7 +36,6 @@ public class SpotifyCodeActivity extends AppCompatActivity {
 
     protected void logOut(Activity act) {
         MainActivity.spotifyApi.setAccessToken("");
-
         AuthenticationClient.logout(act);
 
         Intent intent = new Intent(act, LoginActivity.class);

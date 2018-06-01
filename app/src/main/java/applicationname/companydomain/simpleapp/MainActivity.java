@@ -189,16 +189,13 @@ public class MainActivity extends SpotifyCodeActivity
         options.put("time_range", time_range);
 
         feed = new ArrayList<>();
-
         feed.add(new CategoryItem("Top Artists", time_range));
-
 
         spotify.getTopArtists(options, new Callback<Pager<Artist>>() {
             @Override
             public void success(Pager<Artist> artists, Response response) {
                 if (artists.items.size() > 0) {
                     noArtists = false;
-
 
                     for (int i = 0; i < artists.items.size(); i++) {
 
@@ -336,18 +333,17 @@ public class MainActivity extends SpotifyCodeActivity
     }
 
     private void getTrackFeatures(final List<Track> items) {
-
-        StringBuilder sb = new StringBuilder("");
-
-        for (int i = 0; i < items.size(); i++) {
-            if (i != (items.size() - 1)) {
-                sb.append(items.get(i).id + ",");
-            } else {
-                sb.append(items.get(i).id);
-            }
-        }
-
         if (items.size() > 0) {
+            StringBuilder sb = new StringBuilder("");
+
+            for (int i = 0; i < items.size(); i++) {
+                if (i != (items.size() - 1)) {
+                    sb.append(items.get(i).id + ",");
+                } else {
+                    sb.append(items.get(i).id);
+                }
+            }
+
             noTracks = false;
 
             spotify.getTracksAudioFeatures(sb.toString(), new Callback<AudioFeaturesTracks>() {

@@ -77,67 +77,70 @@ public class RelatedTracks extends SpotifyCodeActivity {
         resetLoginAttempts();
     }
 
-
     private void getTrackFeatures(final List<Track> items) {
+        if (items.size() > 0) {
 
-        StringBuilder sb = new StringBuilder("");
+            StringBuilder sb = new StringBuilder("");
 
-        for (int i = 0; i < items.size(); i++) {
-            if (i != (items.size() - 1)) {
-                sb.append(items.get(i).id + ",");
-            } else {
-                sb.append(items.get(i).id);
-            }
-        }
-
-        MainActivity.spotify.getTracksAudioFeatures(sb.toString(), new Callback<AudioFeaturesTracks>() {
-            @Override
-            public void success(AudioFeaturesTracks features, Response response) {
-
-                feed = new ArrayList<Object>();
-                List<AudioFeaturesTrack> audioFeaturesTracks = features.audio_features;
-
-                for (int i = 0; i < items.size(); i++) {
-
-                    String url = "";
-                    String artist = "";
-
-                    if (items.get(i).album != null && items.get(i).album.images != null
-                            && items.get(i).album.images.size() > 0) {
-                        url = items.get(i).album.images.get(items.get(i).album.images.size() - 1).url;
-                        artist = items.get(i).artists.get(0).name.toString();
-                    }
-
-                    if (audioFeaturesTracks.get(i) != null) {
-                        feed.add(new TrackItem(items.get(i).name.toString(),
-                                artist,
-                                url,
-                                (i % 2) == 0, items.get(i).id,
-                                -1,
-                                items.get(i).popularity,
-                                audioFeaturesTracks.get(i).danceability,
-                                audioFeaturesTracks.get(i).energy,
-                                audioFeaturesTracks.get(i).valence));
-                    } else {
-                        feed.add(new TrackItem(items.get(i).name.toString(),
-                                artist,
-                                url,
-                                (i % 2) == 0, items.get(i).id,
-                                -1,
-                                items.get(i).popularity,
-                                -1f,
-                                -1f,
-                                -1f));
-                    }
+            for (int i = 0; i < items.size(); i++) {
+                if (i != (items.size() - 1)) {
+                    sb.append(items.get(i).id + ",");
+                } else {
+                    sb.append(items.get(i).id);
                 }
-                onItemsLoadComplete();
             }
 
-            @Override
-            public void failure(RetrofitError error) {
-                fetchNewCode(RelatedTracks.this);
-            }
-        });
+            MainActivity.spotify.getTracksAudioFeatures(sb.toString(), new Callback<AudioFeaturesTracks>() {
+                @Override
+                public void success(AudioFeaturesTracks features, Response response) {
+
+                    feed = new ArrayList<Object>();
+                    List<AudioFeaturesTrack> audioFeaturesTracks = features.audio_features;
+
+                    for (int i = 0; i < items.size(); i++) {
+
+                        String url = "";
+                        String artist = "";
+
+                        if (items.get(i).album != null && items.get(i).album.images != null
+                                && items.get(i).album.images.size() > 0) {
+                            url = items.get(i).album.images.get(items.get(i).album.images.size() - 1).url;
+                            artist = items.get(i).artists.get(0).name.toString();
+                        }
+
+                        if (audioFeaturesTracks.get(i) != null) {
+                            feed.add(new TrackItem(items.get(i).name.toString(),
+                                    artist,
+                                    url,
+                                    (i % 2) == 0, items.get(i).id,
+                                    -1,
+                                    items.get(i).popularity,
+                                    audioFeaturesTracks.get(i).danceability,
+                                    audioFeaturesTracks.get(i).energy,
+                                    audioFeaturesTracks.get(i).valence));
+                        } else {
+                            feed.add(new TrackItem(items.get(i).name.toString(),
+                                    artist,
+                                    url,
+                                    (i % 2) == 0, items.get(i).id,
+                                    -1,
+                                    items.get(i).popularity,
+                                    -1f,
+                                    -1f,
+                                    -1f));
+                        }
+                    }
+                    onItemsLoadComplete();
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+                    fetchNewCode(RelatedTracks.this);
+                }
+            });
+        } else {
+            feed.add(new NoResultsItem());
+        }
     }
 
     private void fetchRelatedTracks() {

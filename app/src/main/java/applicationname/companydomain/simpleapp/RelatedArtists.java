@@ -28,25 +28,29 @@ public class RelatedArtists extends SpotifyCodeActivity {
             @Override
             public void success(Artists artists, Response response) {
 
-                int numArtists = Math.min(artists.artists.size(), 10);
-                feed = new ArrayList<Object>();
+                if (artists.artists.size() > 0) {
+                    int numArtists = Math.min(artists.artists.size(), 10);
+                    feed = new ArrayList<Object>();
 
-                for (int i = 0; i < numArtists; i++) {
+                    for (int i = 0; i < numArtists; i++) {
 
-                    String sdURL = "";
-                    String hdURL = "";
+                        String sdURL = "";
+                        String hdURL = "";
 
-                    if (artists.artists.get(i).images.size() > 0) {
-                        sdURL = artists.artists.get(i).images.get(artists.artists.get(i).images.size() - 1).url;
-                        hdURL = artists.artists.get(i).images.get(0).url;
+                        if (artists.artists.get(i).images.size() > 0) {
+                            sdURL = artists.artists.get(i).images.get(artists.artists.get(i).images.size() - 1).url;
+                            hdURL = artists.artists.get(i).images.get(0).url;
+                        }
+
+                        feed.add(new ArtistItem(artists.artists.get(i).name.toString(),
+                                sdURL,
+                                hdURL,
+                                (i % 2) == 0, artists.artists.get(i).id,
+                                -1,
+                                artists.artists.get(i).popularity));
                     }
-
-                    feed.add(new ArtistItem(artists.artists.get(i).name.toString(),
-                            sdURL,
-                            hdURL,
-                            (i % 2) == 0, artists.artists.get(i).id,
-                            -1,
-                            artists.artists.get(i).popularity));
+                } else {
+                    feed.add(new NoResultsItem());
                 }
 
                 mRecyclerViewAdapter.setTopFeed(feed);

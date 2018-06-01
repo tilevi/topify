@@ -54,7 +54,7 @@
         android:id="@+id/homeBar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/Header"
+        android:background="@color/HomeBar"
         android:minHeight="36dp"
         android:theme="?attr/actionBarTheme"
         app:layout_constraintBottom_toBottomOf="parent"

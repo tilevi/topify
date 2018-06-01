@@ -259,6 +259,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                         intent.putExtra("track_artist", trackItem.getArtist());
                         intent.putExtra("top_track", trackItem.getRank());
 
+                        intent.putExtra("popularity", trackItem.getPopularity());
+                        intent.putExtra("dance", trackItem.getDanceability());
+                        intent.putExtra("energy", trackItem.getEnergy());
+                        intent.putExtra("happiness", trackItem.getHappiness());
+
                         context.startActivity(intent);
                     }
                 }

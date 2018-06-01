@@ -7,4 +7,6 @@
     <string name="top_tracks"><u>Top Tracks</u></string>
     <string name="RelatedArtists">Related Artists</string>
     <string name="RelatedTracks">Related Tracks</string>
+    <string name="LoginWithSpotify">Log in to Spotify</string>
+    <string name="Slogan">Explore your taste in music.</string>
 </resources>

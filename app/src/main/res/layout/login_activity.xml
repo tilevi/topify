@@ -9,7 +9,7 @@
     tools:context=".LoginActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/loginButton"
         android:layout_width="193dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="68dp"
@@ -19,7 +19,7 @@
         android:layout_marginStart="8dp"
         android:background="@color/Green"
         android:onClick="onLoginButtonClicked"
-        android:text="Log in with Spotify"
+        android:text="@string/LoginWithSpotify"
         android:textColor="@android:color/background_light"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -34,51 +34,63 @@
         android:layout_marginRight="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
-        app:layout_constraintBottom_toTopOf="@+id/button"
+        app:layout_constraintBottom_toTopOf="@+id/loginButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
+        <ImageView
+            android:id="@+id/topifyLogo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:src="@mipmap/ic_launcher_foreground"
+            app:layout_constraintBottom_toTopOf="@+id/slogan"
+            app:layout_constraintEnd_toStartOf="@+id/appName"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/appName" />
+
         <TextView
-            android:id="@+id/textView"
-            android:layout_width="227dp"
+            android:id="@+id/appName"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:fontFamily="sans-serif"
             android:gravity="center_vertical|center"
-            android:text="Topify"
+            android:maxLines="1"
+            android:text="@string/app_name"
             android:textColor="@android:color/background_light"
             android:textSize="74sp"
             android:textStyle="italic"
-            app:layout_constraintBottom_toTopOf="@+id/textView2"
+            app:layout_constraintBottom_toTopOf="@+id/slogan"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/slogan"
             android:layout_width="0dp"
             android:layout_height="23dp"
-            android:layout_marginBottom="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:gravity="center"
-            android:text="Explore your taste in music."
+            android:text="@string/Slogan"
             android:textColor="@android:color/darker_gray"
             android:textSize="18sp"
-            app:layout_constraintBottom_toTopOf="@+id/button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/appName" />
+
     </android.support.constraint.ConstraintLayout>
 
 </android.support.constraint.ConstraintLayout>

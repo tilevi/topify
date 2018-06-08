@@ -1,5 +1,18 @@
 package applicationname.companydomain.simpleapp;
 
+/*
+    Sources:
+
+        Spotify Android SDK:
+                https://developer.spotify.com/documentation/android-sdk/
+
+        spotify-web-api-android:
+                https://github.com/kaaes/spotify-web-api-android
+
+        Spotify Web API:
+                https://developer.spotify.com/documentation/web-api/
+ */
+
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,36 +26,6 @@ import android.content.Context;
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;
 import com.spotify.sdk.android.authentication.AuthenticationResponse;
-
-import kaaes.spotify.webapi.android.SpotifyCallback;
-import kaaes.spotify.webapi.android.SpotifyError;
-import kaaes.spotify.webapi.android.SpotifyApi;
-import kaaes.spotify.webapi.android.SpotifyService;
-import kaaes.spotify.webapi.android.models.Track;
-import kaaes.spotify.webapi.android.models.Album;
-import kaaes.spotify.webapi.android.models.Artist;
-import kaaes.spotify.webapi.android.models.TracksPager;
-import kaaes.spotify.webapi.android.models.Pager;
-
-import retrofit.RetrofitError;
-import retrofit.Callback;
-import retrofit.client.Response;
-import retrofit.ResponseCallback;
-
-import retrofit.http.Body;
-import retrofit.http.DELETE;
-import retrofit.http.GET;
-import retrofit.http.POST;
-import retrofit.http.PUT;
-import retrofit.http.Path;
-import retrofit.http.Query;
-import retrofit.http.QueryMap;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import android.net.Uri;
 
 public class LoginActivity extends Activity
 {

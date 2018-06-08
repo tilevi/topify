@@ -1,10 +1,23 @@
 package applicationname.companydomain.simpleapp;
 
+/*
+    RecyclerView with multiple ViewHolders:
+            http://www.digitstory.com/recyclerview-multiple-viewholders/
+
+    Spotify Android SDK:
+            https://developer.spotify.com/documentation/android-sdk/
+
+    spotify-web-api-android:
+            https://github.com/kaaes/spotify-web-api-android
+
+    Spotify Web API:
+            https://developer.spotify.com/documentation/web-api/
+ */
+
 import android.content.Context;
 import android.content.Intent;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,8 +35,6 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import android.graphics.Color;
-
-import kaaes.spotify.webapi.android.models.Track;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

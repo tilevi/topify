@@ -3,7 +3,8 @@ package applicationname.companydomain.simpleapp;
 /*
     Code References:
 
-        Pull to refresh:
+
+        Swipe to refresh:
                 http://sapandiwakar.in/pull-to-refresh-for-android-recyclerview-or-any-other-vertically-scrolling-view/
 
         RecyclerView with multiple ViewHolders:
@@ -14,7 +15,17 @@ package applicationname.companydomain.simpleapp;
 
         Question mark image:
                 http://www.cartoomics.it/wp-content/uploads/2018/02/bianco-punto-interrogativo-su-uno-sfondo-circolare-nero_318-35996.jpg
+
+        Spotify Android SDK:
+                https://developer.spotify.com/documentation/android-sdk/
+
+        spotify-web-api-android:
+                https://github.com/kaaes/spotify-web-api-android
+
+        Spotify Web API:
+                https://developer.spotify.com/documentation/web-api/
  */
+
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;

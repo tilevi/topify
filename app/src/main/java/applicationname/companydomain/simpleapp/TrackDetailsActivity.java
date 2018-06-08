@@ -2,19 +2,16 @@ package applicationname.companydomain.simpleapp;
 
 /*
     Code reference for the layouts:
-    https://stackoverflow.com/questions/43977565/is-it-possible-to-increase-the-height-of-the-line-inside-the-progress-bar-androi
+            https://stackoverflow.com/questions/43977565/is-it-possible-to-increase-the-height-of-the-line-inside-the-progress-bar-androi
  */
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebSettings;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -49,44 +46,59 @@ public class TrackDetailsActivity extends AppCompatActivity {
 
             // Popularity
             float popularity = args.getFloat("popularity", -1);
-            int popInt = (int)(popularity);
+            if (popularity >= 0) {
+                int popInt = (int) (popularity);
 
-            ProgressBar popProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
-            popProgressBar.setProgress(popInt);
+                ProgressBar popProgressBar = (ProgressBar) findViewById(R.id.progressBar1);
+                popProgressBar.setProgress(popInt);
 
-            TextView popView = (TextView) findViewById(R.id.popView);
-            popView.setText("Popularity: " + popInt + "%");
+                TextView popView = (TextView) findViewById(R.id.popView);
+                popView.setText("Popularity: " + popInt + "%");
+            } else {
+                findViewById(R.id.popLayout).setVisibility(View.GONE);
+            }
 
             // Danceability
-            float dance = args.getFloat("dance", 0);
-            int danceInt = (int)(dance * 100);
+            float dance = args.getFloat("dance", -1);
+            if (dance >= 0) {
+                int danceInt = (int)(dance * 100);
 
-            ProgressBar danceProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
-            danceProgressBar.setProgress(danceInt);
+                ProgressBar danceProgressBar = (ProgressBar) findViewById(R.id.progressBar2);
+                danceProgressBar.setProgress(danceInt);
 
-            TextView danceView = (TextView) findViewById(R.id.danceView);
-            danceView.setText("Danceability: " + danceInt + "%");
+                TextView danceView = (TextView) findViewById(R.id.danceView);
+                danceView.setText("Danceability: " + danceInt + "%");
+            } else {
+                findViewById(R.id.danceLayout).setVisibility(View.GONE);
+            }
 
             // Energy
-            float energy = args.getFloat("energy", 0);
-            int energyInt = (int)(energy * 100);
+            float energy = args.getFloat("energy", -1);
+            if (energy >= 0) {
+                int energyInt = (int) (energy * 100);
 
-            ProgressBar energyProgressBar = (ProgressBar) findViewById(R.id.progressBar3);
-            energyProgressBar.setProgress(energyInt);
+                ProgressBar energyProgressBar = (ProgressBar) findViewById(R.id.progressBar3);
+                energyProgressBar.setProgress(energyInt);
 
-            TextView energyView = (TextView) findViewById(R.id.energyView);
-            energyView.setText("Energy: " + energyInt + "%");
+                TextView energyView = (TextView) findViewById(R.id.energyView);
+                energyView.setText("Energy: " + energyInt + "%");
+            } else {
+                findViewById(R.id.energyLayout).setVisibility(View.GONE);
+            }
 
             // Happiness
-            float happiness = args.getFloat("happiness", 0);
-            int happinessInt = (int)(happiness * 100);
+            float happiness = args.getFloat("happiness", -1);
+            if (happiness >= 0) {
+                int happinessInt = (int) (happiness * 100);
 
-            ProgressBar happinessProgressBar = (ProgressBar) findViewById(R.id.progressBar4);
-            happinessProgressBar.setProgress(happinessInt);
+                ProgressBar happinessProgressBar = (ProgressBar) findViewById(R.id.progressBar4);
+                happinessProgressBar.setProgress(happinessInt);
 
-            TextView happyView = (TextView) findViewById(R.id.happyView);
-            happyView.setText("Happiness: " + happinessInt + "%");
-
+                TextView happyView = (TextView) findViewById(R.id.happyView);
+                happyView.setText("Happiness: " + happinessInt + "%");
+            } else {
+                findViewById(R.id.happyLayout).setVisibility(View.GONE);
+            }
 
             // Top track rank
             TextView topTrackRank = (TextView) findViewById(R.id.topTrackRank);

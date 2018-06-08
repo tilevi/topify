@@ -1,13 +1,20 @@
 package applicationname.companydomain.simpleapp;
 
 /*
+    Spotify Android SDK:
+            https://developer.spotify.com/documentation/android-sdk/
+
+    spotify-web-api-android:
+            https://github.com/kaaes/spotify-web-api-android
+
+    Spotify Web API:
+            https://developer.spotify.com/documentation/web-api/
+
     Code reference for the layouts:
-    https://stackoverflow.com/questions/43977565/is-it-possible-to-increase-the-height-of-the-line-inside-the-progress-bar-androi
+            https://stackoverflow.com/questions/43977565/is-it-possible-to-increase-the-height-of-the-line-inside-the-progress-bar-androi
  */
 
 import android.content.Intent;
-import android.support.constraint.ConstraintLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import android.support.v7.widget.Toolbar;
@@ -21,19 +28,12 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.request.RequestOptions;
-import com.spotify.sdk.android.authentication.AuthenticationClient;
-import com.spotify.sdk.android.authentication.AuthenticationRequest;
-import com.spotify.sdk.android.authentication.AuthenticationResponse;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
 
-import kaaes.spotify.webapi.android.models.Artist;
 import kaaes.spotify.webapi.android.models.Tracks;
 import okhttp3.Call;
 import okhttp3.Callback;

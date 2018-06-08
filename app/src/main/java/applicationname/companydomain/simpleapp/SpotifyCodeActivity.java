@@ -1,9 +1,20 @@
 package applicationname.companydomain.simpleapp;
 
+/*
+    Spotify Android SDK:
+            https://developer.spotify.com/documentation/android-sdk/
+
+    spotify-web-api-android:
+            https://github.com/kaaes/spotify-web-api-android
+
+    Spotify Web API:
+            https://developer.spotify.com/documentation/web-api/
+ */
+
+
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 
 import com.spotify.sdk.android.authentication.AuthenticationClient;
 import com.spotify.sdk.android.authentication.AuthenticationRequest;

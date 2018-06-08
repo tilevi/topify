@@ -13,10 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import kaaes.spotify.webapi.android.models.Artists;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTrack;
 import kaaes.spotify.webapi.android.models.AudioFeaturesTracks;
-import kaaes.spotify.webapi.android.models.Pager;
 import kaaes.spotify.webapi.android.models.Recommendations;
 import kaaes.spotify.webapi.android.models.Track;
 import retrofit.Callback;

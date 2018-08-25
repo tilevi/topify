@@ -29,7 +29,7 @@ import com.spotify.sdk.android.authentication.AuthenticationResponse;
 
 public class LoginActivity extends Activity
 {
-    protected static final String CLIENT_ID = "***REMOVED***";
+    protected static final String CLIENT_ID = "";
     protected static final String REDIRECT_URI = "simpleapp://callback";
     protected static final int REQUEST_CODE = 1337;
 

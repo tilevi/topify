@@ -1,7 +1,7 @@
 # Topify
 Topify is an Android application that allows Spotify users to gain a better understanding of their taste in music.
 
-Video: https://youtu.be/6LzaeTT9byg
+Video: <a href="https://youtu.be/hwLFn89RYKM" target="_blank">https://youtu.be/hwLFn89RYKM</a>
 
 <a href="https://raw.githubusercontent.com/tilevi/topify/master/images/login_screen.png"><img src="images/login_screen.png"/></a>
 
